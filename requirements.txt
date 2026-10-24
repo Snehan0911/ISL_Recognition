@@ -1,6 +1,9 @@
+tensorflow>=2.15.0
 numpy
 opencv-python
 mediapipe
 pandas
 scikit-learn
 matplotlib
+seaborn
+Pillow
