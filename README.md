@@ -1,19 +1,35 @@
-<<<<<<< HEAD
 # Indian Sign Language (ISL) Recognition using Deep CNN
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit%20Cloud-FF4B4B?logo=streamlit&logoColor=white)](https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![TensorFlow 2.x](https://img.shields.io/badge/TensorFlow-2.21-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
-[![Streamlit App](https://img.shields.io/badge/Streamlit-Deployment-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Test Accuracy](https://img.shields.io/badge/Test%20Accuracy-100%25-brightgreen)](#model-performance--evaluation)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An assistive vision-based AI system engineered to classify Indian Sign Language (ISL) alphabet gestures from static images into corresponding textual characters in real time. Built with a custom 4-block Convolutional Neural Network (CNN) featuring Batch Normalization, Global Average Pooling, and Dropout regularization.
+An assistive vision-based AI system engineered to classify Indian Sign Language (ISL) alphabet gestures from static images into corresponding textual characters in real time. Built with a custom 4-block Convolutional Neural Network (CNN) featuring Batch Normalization, Global Average Pooling, Dropout regularization, dynamic learning rate scheduling, and browser-based speech synthesis.
+
+---
+
+## 🌐 Live Web Application
+
+Experience the live deployed web application directly in your browser without any installation:
+
+👉 **[Launch IndiSign AI Live Web Application](https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/)**
+
+### Web App Capabilities:
+- **Real-Time Gesture Recognition**: Upload hand sign images or capture live photos using your webcam.
+- **Interactive Sentence / Word Builder**: Sign letter-by-letter to compose complete words and sentences with Space, Backspace, and Clear controls.
+- **🔊 Text-to-Speech Engine**: Audibly pronounces formulated sign language sentences in clear computer voice.
+- **Top-3 Probability Breakdown**: Live probability distribution and latency metrics.
+- **ISL Reference Chart**: Built-in visual dictionary for all 24 supported alphabet signs.
 
 ---
 
 ## 📌 Problem Statement & Business Context
-- **The Challenge**: Indian Sign Language (ISL) is the primary mode of communication for millions of deaf and hard-of-hearing individuals across India. The acute scarcity of certified ISL interpreters creates significant communication barriers in educational, healthcare, and professional environments.
-- **The Solution**: An automated, lightweight, edge-deployable deep learning recognition model that translates hand gestures into text with high confidence and low latency.
+- **The Challenge**: Indian Sign Language (ISL) is the primary mode of communication for over 18 million deaf and hard-of-hearing individuals across India. The severe shortage of certified human interpreters poses immense barriers in education, healthcare, and employment.
+- **The Solution**: An automated, lightweight, edge-deployable deep learning recognition model that translates hand gestures into text with high confidence, low latency, and audio feedback.
 
 ---
 
@@ -29,7 +45,7 @@ An assistive vision-based AI system engineered to classify Indian Sign Language 
 
 ## 🧠 Model Architecture
 
-The architecture is custom-designed to balance feature extraction capacity with parameter efficiency:
+The CNN architecture is custom-engineered to balance feature extraction capacity with parameter efficiency:
 
 ```
 Input Image (128 x 128 x 3)
@@ -52,152 +68,26 @@ Input Image (128 x 128 x 3)
 ```
 
 - **Total Parameters**: 463,320 (~1.76 MB)
-- **Global Average Pooling**: Replaces traditional Flatten layers, preventing over 4 million redundant parameters and eliminating spatial overfitting.
-=======
-# 🤟 Indian Sign Language (ISL) Recognition Using CNN
-
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15+-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
-[![Keras](https://img.shields.io/badge/Keras-Deep%20Learning-D00000?logo=keras&logoColor=white)](https://keras.io/)
-[![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8?logo=opencv&logoColor=white)](https://opencv.org/)
-[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-Machine%20Learning-F7931E?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![Accuracy](https://img.shields.io/badge/Test%20Accuracy-88.96%25-brightgreen)](#model-performance)
-
-An end-to-end Computer Vision and Deep Learning system designed to recognize **Indian Sign Language (ISL)** alphabet gestures from images using a custom **Convolutional Neural Network (CNN)**.
-
-This project aims to bridge the communication gap between the deaf and hard-of-hearing community and the hearing world by providing accurate, automated sign language recognition.
-
----
-
-## 📌 Table of Contents
-
-- [Overview](#-overview)
-- [Project Highlights](#-project-highlights)
-- [Dataset Details](#-dataset-details)
-- [Data Preprocessing & Augmentation](#-data-preprocessing--augmentation)
-- [CNN Model Architecture](#-cnn-model-architecture)
-- [Training & Optimization](#-training--optimization)
-- [Model Performance & Evaluation](#-model-performance--evaluation)
-- [Project Structure](#-project-structure)
-- [Installation & Setup](#-installation--setup)
-- [How to Run](#-how-to-run)
-- [Inference & Predictions](#-inference--predictions)
-- [Strengths & Future Roadmap](#-strengths--future-roadmap)
-- [License & Acknowledgments](#-license--acknowledgments)
-
----
-
-## 🌟 Overview
-
-Indian Sign Language (ISL) is predominantly visual-gestural. This project implements a complete, production-grade deep learning workflow that classifies hand sign images into **24 distinct ISL alphabet classes**.
-
-### Supported Classes (24 Alphabet Signs)
-```
-A, B, C, D, E, F, G, H, I, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y
-```
-*(Note: 'J' and 'Z' require dynamic motion gestures and are omitted in static image sign datasets).*
-
----
-
-## ✨ Project Highlights
-
-- **Data Integrity & Duplicate Removal**: Used MD5 cryptographic hashing across all 4,972 images to detect and eliminate duplicate samples, guaranteeing no data contamination.
-- **Stratified Data Splitting**: Preserved class proportions across Train (80%), Validation (10%), and Test (10%) splits.
-- **Efficient tf.data Pipeline**: Utilized TensorFlow's streaming `tf.data.Dataset` with autotuned prefetching and parallel mapping for low memory footprint and high throughput.
-- **Domain-Specific Augmentation**: Applied rotation, zoom, and translation while **intentionally avoiding horizontal flipping**, ensuring hand sign semantic validity is preserved.
-- **Class-Imbalance Handling**: Computed balanced class weights from training labels to prevent model bias towards majority classes.
-- **Smart Callbacks**: Combined `EarlyStopping`, `ReduceLROnPlateau`, and `ModelCheckpoint` to save the best checkpoint (`best_isl_cnn.keras`).
-- **High Generalization**: Achieved **88.96% test accuracy** and **89.74% validation accuracy** with compact model complexity (~424K parameters).
-
----
-
-## 📊 Dataset Details
-
-| Attribute | Details |
-| :--- | :--- |
-| **Total Images (Raw)** | 4,972 |
-| **Duplicates Detected & Removed** | 1 (`031.jpg` in class A) |
-| **Cleaned Dataset** | 4,971 images |
-| **Number of Classes** | 24 |
-| **Image Resolution** | Standardized to $224 \times 224$ pixels |
-| **Color Channels** | 3 (RGB) |
-| **Train Set (80%)** | 3,976 images (125 batches of size 32) |
-| **Validation Set (10%)** | 497 images (16 batches of size 32) |
-| **Test Set (10%)** | 498 images (16 batches of size 32) |
-
----
-
-## 🔄 Data Preprocessing & Augmentation
-
-1. **Format & Integrity Validation**: Confirmed all images are valid RGB JPEGs with no corrupt files.
-2. **Image Resizing & Normalization**: Resized input frames to $224 \times 224 \times 3$ and normalized pixel intensities from $[0, 255]$ to $[0.0, 1.0]$.
-3. **Data Augmentation Pipeline**:
-   - `RandomRotation(factor=0.08)` (subtle angle variations)
-   - `RandomZoom(height_factor=(-0.1, 0.1), width_factor=(-0.1, 0.1))`
-   - `RandomTranslation(height_factor=0.08, width_factor=0.08)`
-   - *No horizontal flips to avoid flipping left/right hand geometry.*
-
----
-
-## 🧠 CNN Model Architecture
-
-The custom 4-block Convolutional Neural Network is built for high feature extraction efficiency while preventing overfitting through regularization:
-
-```
-Input (224 x 224 x 3)
-  │
-  ├── Data Augmentation (Rotation, Zoom, Translation)
-  │
-  ├── [Conv2D (32 filters, 3x3, ReLU, same)] ──> [MaxPooling2D (2x2)]
-  │
-  ├── [Conv2D (64 filters, 3x3, ReLU, same)] ──> [MaxPooling2D (2x2)]
-  │
-  ├── [Conv2D (128 filters, 3x3, ReLU, same)] ──> [MaxPooling2D (2x2)]
-  │
-  ├── [Conv2D (256 filters, 3x3, ReLU, same)] ──> [MaxPooling2D (2x2)]
-  │
-  ├── [GlobalAveragePooling2D]
-  │
-  ├── [Dense (128 units, ReLU)]
-  │
-  ├── [Dropout (0.5)]
-  │
-  └── [Dense (24 units, Softmax Output)]
-```
-
-- **Total Parameters**: 424,408 (1.62 MB)
-- **Trainable Parameters**: 424,408
-- **Loss Function**: `sparse_categorical_crossentropy`
-- **Optimizer**: Adam ($\text{learning rate} = 0.001$)
-
----
-
-## 🚀 Training & Optimization
-
-The network was trained for 20 epochs using the following callback configuration:
-- **`ModelCheckpoint`**: Saved the best weights to `best_isl_cnn.keras` monitoring `val_accuracy`.
-- **`EarlyStopping`**: Monitored `val_loss` with patience of 5 epochs and weight restoration.
-- **`ReduceLROnPlateau`**: Reduced learning rate by $50\%$ when validation loss plateaued for 2 consecutive epochs.
-- **Class Weights**: Dynamically computed via `sklearn.utils.class_weight.compute_class_weight("balanced", ...)` to prevent minority class suppression.
->>>>>>> cece245f4f9897901e7a5c2e6a6753f35a5c0067
+- **Global Average Pooling**: Replaces traditional Flatten layers, saving over **4 million redundant parameters** and eliminating spatial overfitting.
 
 ---
 
 ## 📈 Model Performance & Evaluation
 
-<<<<<<< HEAD
 The upgraded model achieved near-optimal convergence:
 - **Test Set Accuracy**: **100.00%** on 482 unseen test images.
 - **Test Loss**: **0.0018** (Categorical Cross-Entropy).
 - **Macro / Weighted F1-Score**: **1.0000** across all 24 individual classes.
 
-| Metric | Previous Baseline Model | Our Upgraded CNN Model |
-| :--- | :--- | :--- |
-| **Test Accuracy** | 25.10% | **100.00%** |
-| **Test Loss** | 1,469.72 | **0.0018** |
-| **Normalization** | None (exploding loss) | Built-in Rescaling Layer |
-| **Regularization** | None | BatchNorm + Dropout (0.4) |
-| **Convergence** | Diverged | Dynamic LR (`ReduceLROnPlateau`) |
+| Metric | Previous Baseline Model | Our Upgraded CNN Model | Technical Benefit |
+| :--- | :--- | :--- | :--- |
+| **Test Accuracy** | 25.10% | **100.00%** | +74.9% improvement |
+| **Test Loss** | 1,469.72 | **0.0018** | Complete convergence |
+| **Input Normalization** | None (exploding loss) | Built-in `Rescaling(1/255)` | Stable backpropagation gradients |
+| **Layer Normalization** | None | 5x `BatchNormalization` | Eliminates internal covariate shift |
+| **Pooling Head** | Flatten (>4M weights) | `GlobalAveragePooling2D` | Lightweight, edge-friendly |
+| **Regularization** | None | `Dropout(0.4)` | Prevents co-adaptation of neurons |
+| **Optimizer** | Fixed Learning Rate | Adam + `ReduceLROnPlateau` | Dynamically decays learning rate |
 
 ### Training History Curves
 ![Training Curves](training_curves.png)
@@ -207,12 +97,12 @@ The upgraded model achieved near-optimal convergence:
 
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 Quick Start Guide (Local Setup)
 
-### 1. Environment Setup
+### 1. Clone & Set Up Environment
 ```powershell
 # Clone the repository
-git clone https://github.com/your-username/ISL_Recognition.git
+git clone https://github.com/Snehan0911/ISL_Recognition.git
 cd ISL_Recognition
 
 # Create and activate virtual environment
@@ -228,7 +118,7 @@ pip install -r requirements.txt
 python eda_analysis.py
 ```
 
-### 3. Train the Model
+### 3. Train the Model from Scratch
 ```powershell
 python train.py
 ```
@@ -241,94 +131,17 @@ python predict.py --image "data/extracted/Data/B/001.jpg"
 ### 5. Launch the Streamlit Web Application
 ```powershell
 streamlit run app.py
-=======
-### Key Results on Unseen Test Set (498 Images)
+```
+*Opens at `http://localhost:8501`.*
 
-| Metric | Score |
-| :--- | :--- |
-| **Test Accuracy** | **88.96%** |
-| **Best Validation Accuracy** | **89.74%** |
-| **Test Loss** | **0.2750** |
-| **Macro Avg F1-Score** | **0.8620** |
-| **Weighted Avg F1-Score** | **0.8813** |
-| **Multi-Sample Visual Test** | **91.67% (11/12 correct)** |
-
-### Classification Highlights
-- Perfect precision and recall ($1.00$) achieved on signs such as **A**, **C**, and **K**.
-- High confidence predictions (>95%) across individual test samples.
-- Clean confusion matrix showing strong diagonal concentration with minimal inter-class confusion.
+### 6. Launch the FastAPI REST Server
+```powershell
+uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+```
+*Access interactive Swagger API Docs at `http://localhost:8000/docs`.*
 
 ---
 
-## 📁 Project Structure
-
-```text
-ISL_Recognition/
-├── best_isl_cnn.keras            # Trained Keras model checkpoint (best val accuracy)
-├── ISL_Recognition.ipynb         # Complete Jupyter notebook (EDA, training, evaluation)
-├── predict.py                    # Standalone CLI inference script for new images
-├── requirements.txt              # Project dependencies
-├── data/
-│   └── extracted/
-│       └── Data/                 # 24 class folders (A-Y) with sign images
-└── README.md                     # Comprehensive documentation
-```
-
----
-
-## 💻 Installation & Setup
-
-### 1. Prerequisites
-- Python 3.10 or 3.11 recommended
-- Git
-
-### 2. Clone the Repository
-```bash
-git clone https://github.com/Snehan0911/ISL_Recognition.git
-cd ISL_Recognition
-```
-
-### 3. Create and Activate a Virtual Environment
-```bash
-# Windows (PowerShell)
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-
-# Linux / macOS
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 4. Install Dependencies
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
----
-
-## 🏃 How to Run
-
-### Option 1: Explore & Run the Jupyter Notebook
-Open the comprehensive notebook to view the step-by-step EDA, training curves, confusion matrix, and observations:
-```bash
-jupyter notebook ISL_Recognition.ipynb
-```
-
-### Option 2: Run CLI Inference on an Image
-You can classify any hand sign image directly using `predict.py`:
-```bash
-python predict.py --image "data/extracted/Data/A/001.jpg"
-```
-Or specify a custom model checkpoint:
-```bash
-python predict.py --image "path/to/hand_sign.jpg" --model "best_isl_cnn.keras"
->>>>>>> cece245f4f9897901e7a5c2e6a6753f35a5c0067
-```
-
----
-
-<<<<<<< HEAD
 ## 📂 Project Structure
 
 ```
@@ -341,7 +154,8 @@ IndisignLAnguage/
 ├── train.py                     # Training loop with callbacks & evaluation
 ├── predict.py                   # Standalone CLI inference script
 ├── app.py                       # Interactive Streamlit web interface
-├── best_isl_cnn.keras           # Trained optimal model weights
+├── api.py                       # Production FastAPI REST backend
+├── best_isl_cnn.keras           # Trained optimal model weights (100% test acc)
 ├── isl_dataset_distribution.png # EDA class distribution visualization
 ├── training_curves.png          # Training vs validation accuracy/loss plots
 ├── confusion_matrix.png         # 24x24 class confusion matrix heatmap
@@ -354,26 +168,3 @@ IndisignLAnguage/
 
 ## 📜 License
 This project is licensed under the MIT License.
-=======
-## 🔮 Strengths & Future Roadmap
-
-### ✅ Current Strengths
-1. **Methodical EDA**: Exhaustive data verification, dimension consistency, duplicate detection.
-2. **Clean ML Practices**: Strict separation of train/validation/test sets before any fitting or scaling.
-3. **Efficient Architecture**: Global Average Pooling prevents dense parameter explosion, keeping the model fast and lightweight (<5 MB).
-4. **Rich Documentation**: Complete rationale documented for every modeling choice.
-
-### 🚀 Future Roadmap
-- [ ] **Real-Time Webcam Translation**: Integrate OpenCV and MediaPipe Hands to capture hand bounding boxes and run real-time video stream recognition.
-- [ ] **Dynamic Gestures**: Add recurrent layers (LSTM / GRU) or Transformer networks to recognize dynamic signs like **J** and **Z**.
-- [ ] **Interactive Web UI**: Build a Streamlit or Gradio demo for drag-and-drop web testing.
-- [ ] **Edge Deployment**: Convert the model to **TensorFlow Lite (`.tflite`)** or **ONNX** for mobile and Raspberry Pi deployment.
-- [ ] **Sign-to-Speech**: Synthesize predicted signs into spoken audio (Text-to-Speech) for two-way communication.
-
----
-
-## 📄 License & Acknowledgments
-
-- **Dataset**: Indian Sign Language (ISL) Gesture Dataset.
-- **Frameworks**: Developed with [TensorFlow](https://www.tensorflow.org/), [Keras](https://keras.io/), [OpenCV](https://opencv.org/), [Scikit-learn](https://scikit-learn.org/), and [Matplotlib](https://matplotlib.org/).
->>>>>>> cece245f4f9897901e7a5c2e6a6753f35a5c0067
