@@ -10,10 +10,17 @@ __pycache__/
 *$py.class
 *.ipynb_checkpoints
 
+<<<<<<< HEAD
 # Large datasets and archives
 data/
 *.zip
 *.tar.gz
+=======
+# Datasets and archives
+*.zip
+*.tar.gz
+data/
+>>>>>>> cece245f4f9897901e7a5c2e6a6753f35a5c0067
 
 # IDE and OS files
 .vscode/
