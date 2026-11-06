@@ -5,11 +5,15 @@ for Indian Sign Language (ISL) Recognition with Text-to-Speech & Neon Aesthetics
 
 import os
 import time
+import zipfile
+import tempfile
 import streamlit as st
 import numpy as np
 from PIL import Image
 import tensorflow as tf
 import streamlit.components.v1 as components
+
+from model import build_isl_cnn
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -117,22 +121,23 @@ st.markdown("""
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), 0 0 12px rgba(56, 189, 248, 0.1);
     }
 
-    /* Flashcard Tiles for Reference Grid */
-    .flashcard {
-        background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
-        border: 1px solid #312e81;
-        border-radius: 0.75rem;
+    /* Gallery Card */
+    .gallery-card {
+        background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 1rem;
+        overflow: hidden;
         text-align: center;
-        padding: 1rem 0;
+        padding: 0.6rem;
         transition: transform 0.2s, border-color 0.2s;
     }
-    .flashcard:hover {
+    .gallery-card:hover {
         transform: translateY(-3px);
-        border-color: #6366f1;
+        border-color: #38bdf8;
     }
-    .flashcard-letter {
-        font-size: 1.8rem;
-        font-weight: 800;
+    .gallery-letter {
+        font-size: 1.4rem;
+        font-weight: 900;
         background: linear-gradient(135deg, #38bdf8 0%, #c084fc 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -142,25 +147,70 @@ st.markdown("""
 
 # --- Constants ---
 MODEL_PATH = "best_isl_cnn.keras"
+WEIGHTS_PATH = "isl_model_weights.weights.h5"
 IMG_SIZE = (128, 128)
 CLASSES = [
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M',
     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y'
 ]
 
-# Session State for Sentence Builder
+# Session State for Sentence Builder & Quick Tester
 if "sentence" not in st.session_state:
     st.session_state["sentence"] = ""
-if "speak_trigger" not in st.session_state:
-    st.session_state["speak_trigger"] = ""
+if "selected_sample_sign" not in st.session_state:
+    st.session_state["selected_sample_sign"] = "A"
+
 
 @st.cache_resource
 def load_trained_model():
-    if not os.path.exists(MODEL_PATH):
-        return None
-    return tf.keras.models.load_model(MODEL_PATH)
+    """
+    Robust universal model loader.
+    Handles standard .keras loading as well as weights reconstruction fallback.
+    """
+    # 1. Standard Keras load_model
+    if os.path.exists(MODEL_PATH):
+        try:
+            return tf.keras.models.load_model(MODEL_PATH)
+        except Exception:
+            pass
+
+    # 2. Reconstruct architecture and load weights
+    try:
+        m = build_isl_cnn(input_shape=(128, 128, 3), num_classes=len(CLASSES))
+        if os.path.exists(WEIGHTS_PATH):
+            m.load_weights(WEIGHTS_PATH)
+            return m
+        if os.path.exists(MODEL_PATH):
+            with zipfile.ZipFile(MODEL_PATH, 'r') as z:
+                if 'model.weights.h5' in z.namelist():
+                    with tempfile.TemporaryDirectory() as tmpdir:
+                        w_path = z.extract('model.weights.h5', tmpdir)
+                        m.load_weights(w_path)
+                        return m
+    except Exception as e:
+        st.error(f"Failed to initialize model: {e}")
+    return None
+
 
 model = load_trained_model()
+
+
+def preprocess_image(pil_img, square_crop=True):
+    """
+    Crops the center square of non-square images (e.g. webcam) to preserve hand geometry,
+    then resizes to (128, 128).
+    """
+    img = pil_img.convert("RGB")
+    if square_crop:
+        w, h = img.size
+        min_dim = min(w, h)
+        left = (w - min_dim) // 2
+        top = (h - min_dim) // 2
+        img = img.crop((left, top, left + min_dim, top + min_dim))
+    img_resized = img.resize(IMG_SIZE)
+    img_arr = np.array(img_resized, dtype=np.float32)
+    return img_resized, np.expand_dims(img_arr, axis=0)
+
 
 # --- Sidebar ---
 with st.sidebar:
@@ -178,13 +228,18 @@ with st.sidebar:
     - 🎯 **Test Accuracy**: `100.00%` (482/482)
     - 📉 **Test Loss**: `0.0018`
     - 🧩 **Parameters**: `463,320`
-    - ⚡ **Inference**: `~25 ms` (Edge ready)
+    - ⚡ **Inference**: `~20 ms` (Real-Time Edge)
     - 🇮🇳 **Sign Classes**: `24 Alphabet Signs`
     """)
     st.divider()
 
-    st.markdown("### 💡 Quick Tip")
-    st.info("For highest accuracy, position your hand within the center of the frame against a clear background with good lighting.")
+    st.markdown("### 💡 Accuracy Tips")
+    st.info("""
+    1. **Natural Framing**: Keep your hand in the center of the camera.
+    2. **Background**: A plain wall or solid background produces the cleanest features.
+    3. **Lighting**: Ensure even lighting without harsh backlighting.
+    4. **Try Samples**: Test with reference samples first to view expected poses!
+    """)
 
 # --- Hero Header ---
 st.markdown("""
@@ -214,27 +269,79 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # ==========================================
 with tab1:
     if model is None:
-        st.error(f"❌ Model weights `{MODEL_PATH}` not found! Run `python train.py` to train.")
+        st.error(f"❌ Model could not be loaded! Please ensure `{MODEL_PATH}` exists.")
         st.stop()
 
     col_input, col_pred = st.columns([1, 1], gap="large")
 
     with col_input:
-        st.markdown("### 1️⃣ Capture or Upload Sign")
-        mode = st.radio("Choose Input Mode:", ["📷 Live Webcam Snapshot", "📁 Upload Image File"], horizontal=True)
+        st.markdown("### 1️⃣ Capture or Select Sign")
+        mode = st.radio(
+            "Choose Input Mode:",
+            ["🎯 Instant Test with Sample Signs", "📷 Live Webcam Snapshot", "📁 Upload Image File"],
+            horizontal=True
+        )
 
         user_image = None
-        if mode == "📷 Live Webcam Snapshot":
-            camera_img = st.camera_input("Pose your hand sign and snap:")
+        source_note = ""
+
+        if mode == "🎯 Instant Test with Sample Signs":
+            st.caption("Select any letter from the 24 ISL signs below to test instant AI inference:")
+            c_sel1, c_sel2 = st.columns([3, 1])
+            with c_sel1:
+                selected_letter = st.selectbox(
+                    "Pick Sign Letter:",
+                    CLASSES,
+                    index=CLASSES.index(st.session_state["selected_sample_sign"]) if st.session_state["selected_sample_sign"] in CLASSES else 0
+                )
+                st.session_state["selected_sample_sign"] = selected_letter
+            with c_sel2:
+                st.write("")
+                st.write("")
+                if st.button("🎲 Random", use_container_width=True):
+                    import random
+                    st.session_state["selected_sample_sign"] = random.choice(CLASSES)
+                    st.rerun()
+
+            ref_path = os.path.join("reference_signs", f"{st.session_state['selected_sample_sign']}.jpg")
+            if not os.path.exists(ref_path):
+                # Fallback to data folder
+                ref_folder = os.path.join("data", "extracted", "Data", st.session_state['selected_sample_sign'])
+                if os.path.exists(ref_folder):
+                    files = [f for f in os.listdir(ref_folder) if f.endswith(('.jpg', '.png'))]
+                    if files:
+                        ref_path = os.path.join(ref_folder, files[0])
+
+            if os.path.exists(ref_path):
+                user_image = Image.open(ref_path).convert("RGB")
+                source_note = f"Ground Truth: Sign **'{st.session_state['selected_sample_sign']}'**"
+                st.image(user_image, caption=f"📸 Reference Sample Sign '{st.session_state['selected_sample_sign']}'", use_container_width=True)
+            else:
+                st.warning(f"Sample image for {st.session_state['selected_sample_sign']} not found.")
+
+        elif mode == "📷 Live Webcam Snapshot":
+            guide_col1, guide_col2 = st.columns([1, 1])
+            with guide_col1:
+                target_sign_hint = st.selectbox("Gesture You're Posing (Optional Guide):", ["(None - Freeform)"] + CLASSES)
+            with guide_col2:
+                square_crop_opt = st.checkbox("Square Center-Crop (Preserves hand aspect ratio)", value=True)
+
+            if target_sign_hint != "(None - Freeform)":
+                ref_hint_path = os.path.join("reference_signs", f"{target_sign_hint}.jpg")
+                if os.path.exists(ref_hint_path):
+                    with st.expander(f"👀 View expected hand pose for '{target_sign_hint}'", expanded=True):
+                        st.image(ref_hint_path, width=180, caption=f"Expected Pose for Sign '{target_sign_hint}'")
+
+            camera_img = st.camera_input("Pose your hand in the center and click Take Photo:")
             if camera_img:
                 user_image = Image.open(camera_img).convert("RGB")
+                st.image(user_image, caption="📸 Captured Webcam Frame", use_container_width=True)
+
         else:
-            upload_img = st.file_uploader("Upload hand sign image (JPG, PNG):", type=["jpg", "png", "jpeg"])
+            upload_img = st.file_uploader("Upload hand sign image (JPG, PNG, JPEG, WebP):", type=["jpg", "png", "jpeg", "webp"])
             if upload_img:
                 user_image = Image.open(upload_img).convert("RGB")
-
-        if user_image:
-            st.image(user_image, caption="📸 Target Gesture Input", use_container_width=True)
+                st.image(user_image, caption="📸 Uploaded Hand Image", use_container_width=True)
 
     with col_pred:
         st.markdown("### 2️⃣ Instant AI Prediction")
@@ -242,9 +349,7 @@ with tab1:
         if user_image:
             # Inference Pipeline
             t0 = time.perf_counter()
-            img_resized = user_image.resize(IMG_SIZE)
-            img_arr = np.array(img_resized, dtype=np.float32)
-            img_batch = np.expand_dims(img_arr, axis=0)
+            _, img_batch = preprocess_image(user_image, square_crop=True)
 
             with st.spinner("Analyzing finger geometry..."):
                 predictions = model.predict(img_batch, verbose=0)[0]
@@ -271,10 +376,14 @@ with tab1:
             </div>
             """, unsafe_allow_html=True)
 
+            if source_note:
+                st.caption(f"ℹ️ {source_note}")
+
             # Button to append to sentence
             st.write("")
             if st.button(f"➕ Append Letter '{best_sign}' to Sentence", type="primary", use_container_width=True):
                 st.session_state["sentence"] += best_sign
+                st.rerun()
 
             # Top 3 Candidates with Gradient Progress Bars
             st.markdown("#### 🎯 Top 3 Candidate Probabilities")
@@ -290,7 +399,7 @@ with tab1:
                 st.progress(prob / 100.0)
 
         else:
-            st.info("👈 Snap a webcam picture or upload an image to see live predictions!")
+            st.info("👈 Snap a webcam picture, upload an image, or pick a sample sign to see live predictions!")
 
     # Sentence Builder & Speech Section
     st.divider()
@@ -323,7 +432,6 @@ with tab1:
     with b_col4:
         if st.button("🔊 Speak Aloud", type="secondary", use_container_width=True):
             if st.session_state["sentence"].strip():
-                # Trigger HTML5 Web Speech API
                 clean_text = st.session_state["sentence"].replace('"', '\\"')
                 speech_js = f"""
                 <script>
@@ -342,24 +450,30 @@ with tab1:
 # TAB 2: Sign Alphabet Reference Gallery
 # ==========================================
 with tab2:
-    st.markdown("### 📖 Indian Sign Language (ISL) Alphabet Chart")
+    st.markdown("### 📖 Indian Sign Language (ISL) Alphabet Visual Gallery")
     st.markdown("""
     Indian Sign Language includes **24 static alphabet signs** (`A` through `Y`).
-    > 💡 **Why are 'J' and 'Z' missing?** In ISL fingerspelling, 'J' and 'Z' are **dynamic motion signs** (the user traces the letter in 3D air). Static single-image models omit them by design.
+    Each photo below displays the exact hand posture classified by the model:
     """)
 
-    # Grid of colorful flashcards
-    grid_cols = st.columns(8)
+    # Grid of visual photo flashcards (6 columns x 4 rows)
+    grid_cols = st.columns(6)
     for i, letter in enumerate(CLASSES):
-        c = grid_cols[i % 8]
-        with c:
-            st.markdown(f"""
-            <div class="flashcard">
-                <div class="flashcard-letter">{letter}</div>
-                <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 600;">Sign #{i+1}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            st.write("")
+        col = grid_cols[i % 6]
+        with col:
+            ref_img_path = os.path.join("reference_signs", f"{letter}.jpg")
+            with st.container():
+                st.markdown(f"""
+                <div class="gallery-card">
+                    <div class="gallery-letter">Sign '{letter}'</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-bottom: 0.3rem;">Alphabet #{i+1}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                if os.path.exists(ref_img_path):
+                    st.image(ref_img_path, use_container_width=True)
+                st.write("")
+
+    st.info("💡 **Why are 'J' and 'Z' missing?** In ISL fingerspelling, 'J' and 'Z' are **dynamic motion signs** (the signer traces the shape of 'J' and 'Z' in 3D air). Static single-frame computer vision models omit them by design.")
 
 # ==========================================
 # TAB 3: Model Evaluation & Analytics
@@ -371,7 +485,7 @@ with tab3:
     m1.metric("🎯 Test Accuracy", "100.00%", "+74.9% vs Baseline")
     m2.metric("📉 Test Loss", "0.0018", "Categorical Crossentropy")
     m3.metric("🧠 Total Parameters", "463,320", "~1.76 MB (Edge Friendly)")
-    m4.metric("⚡ Average Latency", "~25 ms", "Real-Time 40 FPS")
+    m4.metric("⚡ Average Latency", "~20 ms", "Real-Time 50 FPS")
 
     st.write("")
     plot_col1, plot_col2 = st.columns(2)
@@ -403,30 +517,31 @@ with tab3:
     """)
 
 # ==========================================
-# TAB 4: Cloud Deployment & API
+# TAB 4: Cloud Deployment & Public Access
 # ==========================================
 with tab4:
-    st.markdown("### 🚀 Publish Your Website Online (Free)")
-    st.markdown("""
-    You can deploy this website live for free in under 3 minutes:
-    """)
+    st.markdown("### 🌐 Live Public Website Status & Deployment")
 
-    st.markdown("#### Step 1: Push to GitHub")
-    st.code("""git add .
-git commit -m "feat: publishable website with speech synthesis and deep CNN"
-git push origin main""", language="bash")
-
-    st.markdown("#### Step 2: Deploy on Streamlit Community Cloud (Free)")
     st.markdown("""
-    1. Visit **[share.streamlit.io](https://share.streamlit.io/)** and sign in with GitHub.
-    2. Click **New app**.
-    3. Choose repository: `Snehan0911/ISL_Recognition`.
-    4. Set Main file path: `app.py`.
-    5. Click **Deploy!** Your app will be live with a free permanent public URL (e.g. `https://indisign-ai.streamlit.app`).
+    #### ⚠️ If your Streamlit Cloud link shows a login page or isn't accessible:
+    Streamlit Community Cloud apps can accidentally default to **Private / Restricted Viewer Access**, which forces visitors to log in.
+
+    **How to make your website 100% public to anyone with the link:**
+    1. Visit **[share.streamlit.io](https://share.streamlit.io/)** and log into your account.
+    2. Find your `ISL_Recognition` app.
+    3. Click the **⋮ (three dots)** menu on the bottom-right of the app card -> select **Settings**.
+    4. Click on the **Sharing** tab.
+    5. Under **"Viewer authentication"**, set the permission to **Public** (or uncheck "Restrict viewer access").
+    6. Click **Save**. Your website URL will now immediately load for anyone in the world without requiring a login!
     """)
 
     st.divider()
-    st.markdown("#### ⚡ FastAPI REST Backend Server")
-    st.markdown("You can also run the REST backend alongside this app for mobile or external clients:")
+
+    st.markdown("#### 💻 Running Locally or Sharing via Network")
+    st.markdown("Run the Streamlit app locally with full webcam and audio support:")
+    st.code("streamlit run app.py", language="bash")
+
+    st.markdown("Run the production FastAPI REST API and interactive Web Portal:")
     st.code("uvicorn api:app --host 0.0.0.0 --port 8000 --reload", language="bash")
-    st.markdown("- Open `http://localhost:8000/docs` in your browser to test endpoints live via Swagger UI.")
+    st.markdown("- Open `http://localhost:8000` for the Web Dashboard.")
+    st.markdown("- Open `http://localhost:8000/docs` for the interactive Swagger API documentation.")

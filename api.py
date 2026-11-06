@@ -16,8 +16,12 @@ import tensorflow as tf
 from fastapi import FastAPI, File, UploadFile, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+
+from model import build_isl_cnn
 
 MODEL_PATH = "best_isl_cnn.keras"
+WEIGHTS_PATH = "isl_model_weights.weights.h5"
 IMG_SIZE = (128, 128)
 CLASSES = [
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M',
@@ -26,12 +30,34 @@ CLASSES = [
 
 model_container = {}
 
+def get_robust_isl_model():
+    """Universal robust loader that handles any Keras version gracefully."""
+    if os.path.exists(MODEL_PATH):
+        try:
+            return tf.keras.models.load_model(MODEL_PATH)
+        except Exception as e:
+            print(f"[WARN] Direct load_model failed ({e}), using weights fallback.")
+
+    m = build_isl_cnn(input_shape=(128, 128, 3), num_classes=len(CLASSES))
+    if os.path.exists(WEIGHTS_PATH):
+        m.load_weights(WEIGHTS_PATH)
+        return m
+
+    if os.path.exists(MODEL_PATH):
+        import zipfile
+        import tempfile
+        with zipfile.ZipFile(MODEL_PATH, 'r') as z:
+            if 'model.weights.h5' in z.namelist():
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    w = z.extract('model.weights.h5', tmpdir)
+                    m.load_weights(w)
+                    return m
+    raise RuntimeError(f"Could not load ISL model from {MODEL_PATH} or {WEIGHTS_PATH}")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    if not os.path.exists(MODEL_PATH):
-        raise RuntimeError(f"Model file '{MODEL_PATH}' not found.")
-    print(f"[INFO] Loading model from {MODEL_PATH}...")
-    model_container["model"] = tf.keras.models.load_model(MODEL_PATH)
+    print(f"[INFO] Initializing ISL Recognition model...")
+    model_container["model"] = get_robust_isl_model()
     print(f"[INFO] Model loaded successfully.")
     yield
     model_container.clear()
@@ -50,6 +76,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+if os.path.exists("reference_signs"):
+    app.mount("/reference_signs", StaticFiles(directory="reference_signs"), name="reference_signs")
 
 class PredictionCandidate(BaseModel):
     sign: str
@@ -229,7 +258,7 @@ def web_dashboard():
         <div id="preview-box" class="mt-5 pt-4 border-t border-slate-800/80">
           <div class="text-xs text-slate-400 font-medium mb-2.5">Current Image Preview:</div>
           <div class="card-inner p-2 flex justify-center">
-            <img id="preview-img" src="data/extracted/Data/A/001.jpg" alt="Sign Preview" class="max-h-72 rounded-xl object-contain shadow-md">
+            <img id="preview-img" src="/reference_signs/A.jpg" alt="Sign Preview" class="max-h-72 rounded-xl object-contain shadow-md">
           </div>
         </div>
       </div>

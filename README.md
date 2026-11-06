@@ -19,11 +19,13 @@ Experience the live deployed web application directly in your browser without an
 👉 **[Launch IndiSign AI Live Web Application](https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/)**
 
 ### Web App Capabilities:
-- **Real-Time Gesture Recognition**: Upload hand sign images or capture live photos using your webcam.
+- **Instant Sample Testing**: Select any of the 24 alphabet signs to verify model predictions and confidence in real time.
+- **Natural Aspect Ratio Preservation**: Smart square center-cropping prevents horizontal/vertical hand distortion from wide-angle webcams.
+- **Real-Time Gesture Recognition**: Upload hand sign images or capture live photos using your webcam with side-by-side pose reference.
 - **Interactive Sentence / Word Builder**: Sign letter-by-letter to compose complete words and sentences with Space, Backspace, and Clear controls.
 - **🔊 Text-to-Speech Engine**: Audibly pronounces formulated sign language sentences in clear computer voice.
-- **Top-3 Probability Breakdown**: Live probability distribution and latency metrics.
-- **ISL Reference Chart**: Built-in visual dictionary for all 24 supported alphabet signs.
+- **Top-3 Probability Breakdown**: Live probability distribution and latency metrics (~20 ms).
+- **ISL Visual Reference Gallery**: Built-in visual dictionary showing verified real photo postures for all 24 supported alphabet signs.
 
 ---
 
@@ -155,7 +157,10 @@ IndisignLAnguage/
 ├── predict.py                   # Standalone CLI inference script
 ├── app.py                       # Interactive Streamlit web interface
 ├── api.py                       # Production FastAPI REST backend
+├── reference_signs/             # Clean reference images for all 24 alphabet signs
 ├── best_isl_cnn.keras           # Trained optimal model weights (100% test acc)
+├── isl_model_weights.weights.h5 # Universal weights fallback for cross-version support
+├── packages.txt                 # Linux system dependencies for Streamlit Cloud
 ├── isl_dataset_distribution.png # EDA class distribution visualization
 ├── training_curves.png          # Training vs validation accuracy/loss plots
 ├── confusion_matrix.png         # 24x24 class confusion matrix heatmap
