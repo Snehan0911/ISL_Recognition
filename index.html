@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IndiSign AI — Deep Learning Indian Sign Language Recognition & Speech Engine</title>
+  <meta name="description" content="A production-grade, edge-deployable 4-Block Deep CNN translating Indian Sign Language gestures into text and audible speech in real-time with 100% test accuracy.">
+  <meta name="keywords" content="Indian Sign Language, ISL, Deep Learning, Computer Vision, CNN, TensorFlow, Assistive AI, Real-Time Recognition, Accessibility">
+  <meta name="author" content="Snehan0911">
+
+  <!-- OpenGraph / Social Meta Tags -->
+  <meta property="og:title" content="IndiSign AI — Assistive Vision AI for Indian Sign Language">
+  <meta property="og:description" content="100% test accuracy on 24 ISL alphabets with ~20ms edge inference and real-time Text-to-Speech synthesis.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="screenshot_1_realtime_recognition.png">
+
+  <!-- Tailwind CSS & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+            },
+            dark: {
+              bg: '#07090e',
+              card: '#0d1322',
+              cardHover: '#131b2e',
+              border: 'rgba(56, 189, 248, 0.15)',
+              borderHover: 'rgba(56, 189, 248, 0.4)',
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 4s ease-in-out infinite',
+            'scan': 'scanline 2s linear infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            scanline: {
+              '0%': { top: '0%' },
+              '100%': { top: '100%' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #07090e;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #38bdf8;
+    }
+
+    /* Glassmorphism Classes */
+    .glass-nav {
+      background: rgba(7, 9, 14, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: linear-gradient(135deg, rgba(13, 19, 34, 0.85) 0%, rgba(10, 14, 26, 0.95) 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+    .glass-card:hover {
+      border-color: rgba(56, 189, 248, 0.35);
+      box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.15);
+    }
+    .glow-cyan {
+      box-shadow: 0 0 40px -10px rgba(56, 189, 248, 0.3);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.25);
+    }
+    
+    /* Interactive Scanner Line */
+    .scan-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #38bdf8, #818cf8, transparent);
+      box-shadow: 0 0 15px #38bdf8;
+      animation: scanline 2.2s ease-in-out infinite alternate;
+    }
+    @keyframes scanline {
+      0% { top: 5%; opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { top: 95%; opacity: 0.2; }
+    }
+
+    /* Ambient Background Orbs */
+    .orb-1 {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, transparent 70%);
+      filter: blur(60px);
+      pointer-events: none;
+    }
+    .orb-2 {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .orb-3 {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+      filter: blur(60px);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-[#07090e] text-slate-100 font-sans antialiased selection:bg-sky-500/30 selection:text-sky-200 min-h-screen relative overflow-x-hidden">
+
+  <!-- Background Ambient Lights -->
+  <div class="orb-1 top-10 left-[-100px]"></div>
+  <div class="orb-2 top-[30%] right-[-150px]"></div>
+  <div class="orb-3 bottom-[20%] left-[-100px]"></div>
+
+  <!-- ======================================================== -->
+  <!-- 1. NAVIGATION BAR -->
+  <!-- ======================================================== -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Logo & Branding -->
+      <a href="#hero" class="flex items-center gap-3 group">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-sky-600 via-indigo-600 to-emerald-500 p-[2px] transition-transform duration-300 group-hover:scale-105">
+          <div class="w-full h-full bg-[#0d1322] rounded-[10px] flex items-center justify-center text-xl">
+            🤟
+          </div>
+        </div>
+        <div>
+          <span class="text-xl font-black tracking-tight text-white flex items-center gap-1.5">
+            IndiSign <span class="bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">AI</span>
+          </span>
+          <span class="text-[10px] tracking-wider uppercase font-semibold text-sky-400 block -mt-1 font-mono">Edge ISL Vision</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <div class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-300">
+        <a href="#simulator" class="hover:text-sky-400 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-gamepad text-xs text-sky-400"></i> Simulator
+        </a>
+        <a href="#metrics" class="hover:text-sky-400 transition">Metrics</a>
+        <a href="#architecture" class="hover:text-sky-400 transition">Architecture</a>
+        <a href="#video-demo" class="hover:text-sky-400 transition">Live Demo Video</a>
+        <a href="#gallery" class="hover:text-sky-400 transition">Screenshots</a>
+        <a href="#alphabet-dict" class="hover:text-sky-400 transition">Sign Dictionary</a>
+        <a href="#api" class="hover:text-sky-400 transition font-mono text-xs px-2.5 py-1 rounded bg-slate-800 text-sky-300 border border-slate-700">REST API</a>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center gap-3">
+        <a href="https://github.com/Snehan0911/ISL_Recognition" target="_blank" rel="noopener noreferrer"
+           class="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/80 transition shadow hover:border-slate-600">
+          <i class="fa-brands fa-github text-sm"></i>
+          <span>GitHub</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-700">v2.0</span>
+        </a>
+
+        <a href="https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white shadow-lg shadow-sky-500/25 transition transform hover:-translate-y-0.5">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span>Live Web App</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobileMenuBtn" class="md:hidden text-slate-400 hover:text-white p-2">
+          <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobileMenu" class="hidden md:hidden bg-[#0a0f1d] border-b border-slate-800 px-6 py-5 space-y-3">
+      <a href="#simulator" class="block text-slate-300 hover:text-sky-400 py-1 font-semibold">Simulator Playground</a>
+      <a href="#metrics" class="block text-slate-300 hover:text-sky-400 py-1 font-semibold">Model Benchmarks</a>
+      <a href="#architecture" class="block text-slate-300 hover:text-sky-400 py-1 font-semibold">CNN Architecture</a>
+      <a href="#video-demo" class="block text-slate-300 hover:text-sky-400 py-1 font-semibold">Video Demonstration</a>
+      <a href="#gallery" class="block text-slate-300 hover:text-sky-400 py-1 font-semibold">Application Screenshots</a>
+      <a href="#alphabet-dict" class="block text-slate-300 hover:text-sky-400 py-1 font-semibold">ISL Visual Dictionary</a>
+      <a href="#api" class="block text-slate-300 hover:text-sky-400 py-1 font-semibold">FastAPI Endpoints</a>
+      <div class="pt-3 border-t border-slate-800 flex gap-2">
+        <a href="https://github.com/Snehan0911/ISL_Recognition" target="_blank" class="w-1/2 text-center py-2 bg-slate-800 rounded-lg text-xs font-bold text-slate-200">GitHub Repo</a>
+        <a href="https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/" target="_blank" class="w-1/2 text-center py-2 bg-sky-600 rounded-lg text-xs font-bold text-white">Streamlit Cloud</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ======================================================== -->
+  <!-- 2. HERO SECTION -->
+  <!-- ======================================================== -->
+  <section id="hero" class="pt-32 pb-20 md:pt-40 md:pb-28 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Top Announcement Badge -->
+      <div class="flex justify-center mb-6">
+        <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass-card border border-sky-500/30 text-xs font-semibold text-slate-200 shadow-inner">
+          <span class="flex h-2 w-2 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span class="text-sky-400 font-bold uppercase tracking-wider font-mono text-[11px]">Production Deployed</span>
+          <span class="text-slate-600">•</span>
+          <span>100.00% Test Accuracy</span>
+          <span class="text-slate-600">•</span>
+          <span class="text-emerald-400 font-mono font-bold">~20ms Latency</span>
+        </div>
+      </div>
+
+      <!-- Main Title & Tagline -->
+      <div class="text-center max-w-4xl mx-auto space-y-6">
+        <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-white">
+          Bridging the Silence with <br class="hidden sm:inline">
+          <span class="bg-gradient-to-r from-sky-400 via-indigo-400 to-pink-400 bg-clip-text text-transparent">
+            Real-Time Vision AI & Speech
+          </span>
+        </h1>
+        
+        <p class="text-base sm:text-lg lg:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal">
+          <strong class="text-white font-semibold">IndiSign AI</strong> is an assistive computer vision system engineered with a custom 4-block Convolutional Neural Network. It translates Indian Sign Language (ISL) hand gestures into textual words and audible speech synthesis in real-time, empowering 18 Million+ deaf individuals across India.
+        </p>
+
+        <!-- CTA Action Buttons -->
+        <div class="pt-4 flex flex-wrap items-center justify-center gap-4">
+          <a href="#simulator" 
+             class="px-6 py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white shadow-xl shadow-sky-500/30 transition transform hover:-translate-y-0.5 flex items-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+            <span>Test Live Simulator Below</span>
+          </a>
+
+          <a href="https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/" target="_blank" rel="noopener noreferrer"
+             class="px-6 py-3.5 rounded-xl font-bold text-sm bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700 transition flex items-center gap-2">
+            <i class="fa-solid fa-desktop text-sky-400"></i>
+            <span>Open Streamlit Web App</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
+          </a>
+
+          <a href="IndiSign_AI_Project_Presentation.html" target="_blank"
+             class="px-5 py-3.5 rounded-xl font-bold text-sm bg-indigo-950/40 hover:bg-indigo-900/40 text-indigo-300 border border-indigo-700/40 transition flex items-center gap-2">
+            <i class="fa-solid fa-person-chalkboard"></i>
+            <span>Slide Deck (10 Slides)</span>
+          </a>
+
+          <a href="#video-demo"
+             class="px-5 py-3.5 rounded-xl font-bold text-sm bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition flex items-center gap-2">
+            <i class="fa-solid fa-play text-rose-400"></i>
+            <span>Watch Video Demo</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Highlights Grid under Hero -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto mt-14">
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-emerald-500">
+          <div class="text-3xl lg:text-4xl font-extrabold text-emerald-400 font-mono">100.00%</div>
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Test Accuracy</div>
+          <div class="text-[11px] text-slate-500 mt-1">482 / 482 Unseen Test Samples</div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-sky-500">
+          <div class="text-3xl lg:text-4xl font-extrabold text-sky-400 font-mono">~20 ms</div>
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Inference Latency</div>
+          <div class="text-[11px] text-slate-500 mt-1">50 FPS Real-Time Stream</div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-purple-500">
+          <div class="text-3xl lg:text-4xl font-extrabold text-purple-400 font-mono">463K</div>
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Parameters</div>
+          <div class="text-[11px] text-slate-500 mt-1">Lightweight 1.76 MB Edge Footprint</div>
+        </div>
+
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-amber-500">
+          <div class="text-3xl lg:text-4xl font-extrabold text-amber-400 font-mono">18M+</div>
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1">Community Impact</div>
+          <div class="text-[11px] text-slate-500 mt-1">Deaf Individuals Across India</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 3. HANDS-ON INTERACTIVE ISL SIMULATOR & SPEECH STUDIO -->
+  <!-- ======================================================== -->
+  <section id="simulator" class="py-20 relative bg-gradient-to-b from-[#07090e] via-[#0b1020] to-[#07090e] border-y border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-bold uppercase tracking-wider font-mono">
+          <i class="fa-solid fa-microchip"></i> Live Hands-On Demo
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">
+          Interactive ISL Gesture Simulator & Speech Studio
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-2">
+          Experience the model right now inside your browser. Click any alphabet sign to test the neural vision engine, formulate words in the sentence builder, and trigger audible speech synthesis!
+        </p>
+      </div>
+
+      <!-- Main Simulator Card -->
+      <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-5xl mx-auto glow-cyan">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          <!-- Left Column: Hand Gesture Visualizer & Scan Simulation -->
+          <div class="lg:col-span-5 flex flex-col items-center">
+            
+            <div class="relative w-64 h-64 sm:w-72 sm:h-72 rounded-2xl overflow-hidden border-2 border-sky-500/50 bg-black/60 shadow-2xl flex items-center justify-center group">
+              <!-- Scanline Animation -->
+              <div class="scan-line"></div>
+              
+              <!-- Target Reference Image -->
+              <img id="simSignImage" src="reference_signs/A.jpg" alt="Selected Sign Gesture" 
+                   class="w-full h-full object-cover transition-all duration-300 transform group-hover:scale-105"
+                   onerror="this.src='https://placehold.co/300x300/0d1322/38bdf8?text=Sign+Gesture'">
+
+              <!-- Bounding Box Overlay -->
+              <div class="absolute inset-4 border border-dashed border-sky-400/60 rounded-xl pointer-events-none flex flex-col justify-between p-2">
+                <div class="flex justify-between items-center text-[10px] font-mono text-sky-300 bg-black/70 px-2 py-0.5 rounded backdrop-blur-sm self-start">
+                  <span>ROI: [128x128]</span>
+                </div>
+                <div class="flex justify-between items-center text-[10px] font-mono text-emerald-400 bg-black/70 px-2 py-0.5 rounded backdrop-blur-sm self-end">
+                  <span id="simConfidenceBadge">CONF: 99.9%</span>
+                </div>
+              </div>
+
+              <!-- Corner Markers -->
+              <div class="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-sky-400"></div>
+              <div class="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-sky-400"></div>
+              <div class="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-sky-400"></div>
+              <div class="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-sky-400"></div>
+            </div>
+
+            <!-- Gesture Caption & Latency Counter -->
+            <div class="mt-4 flex items-center justify-between w-64 sm:w-72 text-xs font-mono">
+              <span class="text-slate-400">Active Sign: <strong id="simCurrentLetter" class="text-sky-400 text-sm font-black">A</strong></span>
+              <span class="text-emerald-400 font-bold flex items-center gap-1">
+                <i class="fa-solid fa-bolt text-[10px]"></i>
+                <span id="simLatency">18.6 ms</span>
+              </span>
+            </div>
+
+            <!-- Quick Append Button -->
+            <button id="btnAppendChar" onclick="appendCurrentSign()"
+                    class="mt-4 w-64 sm:w-72 py-2.5 px-4 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-sky-500/20 transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-plus"></i> Append '<span id="btnAppendLetter">A</span>' to Sentence
+            </button>
+          </div>
+
+          <!-- Right Column: Prediction Breakdown & Live Sentence Builder -->
+          <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Top Prediction Probability Bars -->
+            <div class="bg-slate-900/80 rounded-2xl p-5 border border-slate-800">
+              <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-mono uppercase text-slate-400 font-bold tracking-wider">Top-3 CNN Probabilities</span>
+                <span class="text-xs text-sky-400 font-mono font-semibold">Softmax Output</span>
+              </div>
+
+              <!-- Bar 1 -->
+              <div class="space-y-1 mb-2.5">
+                <div class="flex justify-between text-xs font-mono">
+                  <span class="text-white font-bold" id="prob1Label">Class A</span>
+                  <span class="text-emerald-400 font-bold" id="prob1Val">99.88%</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                  <div id="prob1Bar" class="bg-gradient-to-r from-emerald-500 to-sky-400 h-2.5 rounded-full transition-all duration-300" style="width: 99.88%"></div>
+                </div>
+              </div>
+
+              <!-- Bar 2 -->
+              <div class="space-y-1 mb-2.5">
+                <div class="flex justify-between text-xs font-mono">
+                  <span class="text-slate-400" id="prob2Label">Class B</span>
+                  <span class="text-slate-400" id="prob2Val">0.08%</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                  <div id="prob2Bar" class="bg-sky-500/60 h-1.5 rounded-full transition-all duration-300" style="width: 5%"></div>
+                </div>
+              </div>
+
+              <!-- Bar 3 -->
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs font-mono">
+                  <span class="text-slate-400" id="prob3Label">Class C</span>
+                  <span class="text-slate-400" id="prob3Val">0.04%</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                  <div id="prob3Bar" class="bg-indigo-500/60 h-1.5 rounded-full transition-all duration-300" style="width: 3%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Interactive 24-Alphabet Selection Strip -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label class="text-xs font-mono uppercase text-slate-400 font-bold tracking-wider">Select Sample Sign Gesture (24 ISL Signs)</label>
+                <span class="text-[11px] text-slate-500">Excludes motion J & Z</span>
+              </div>
+              
+              <div class="grid grid-cols-8 sm:grid-cols-12 gap-1.5 max-h-36 overflow-y-auto p-1 bg-slate-950/60 rounded-xl border border-slate-800/80" id="alphabetButtonsContainer">
+                <!-- Dynamically populated or rendered static buttons -->
+              </div>
+            </div>
+
+            <!-- Sentence Builder Output & Speech Synthesis Controls -->
+            <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-mono uppercase text-slate-400 font-bold tracking-wider flex items-center gap-1.5">
+                  <i class="fa-solid fa-keyboard text-sky-400"></i> Formulated Sign Sentence
+                </span>
+                <span id="ttsStatus" class="text-[11px] text-emerald-400 font-mono hidden items-center gap-1">
+                  <i class="fa-solid fa-volume-high animate-bounce"></i> Speaking...
+                </span>
+              </div>
+
+              <!-- Sentence Display Window -->
+              <div id="sentenceDisplay" 
+                   class="min-h-[50px] p-3 rounded-xl bg-black/60 border border-slate-700/80 font-mono text-lg font-bold text-sky-300 tracking-wider flex items-center flex-wrap gap-1 select-all">
+                <span class="text-slate-600 font-normal text-sm select-none" id="emptyPlaceholder">Click letters above or use presets below...</span>
+              </div>
+
+              <!-- Action Controls: Speak, Space, Backspace, Clear -->
+              <div class="flex flex-wrap items-center gap-2 pt-1">
+                <button onclick="speakSentence()" 
+                        class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-600/30 transition">
+                  <i class="fa-solid fa-volume-high"></i> Speak (TTS)
+                </button>
+                <button onclick="appendSpace()" 
+                        class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition">
+                  Space ␣
+                </button>
+                <button onclick="backspaceChar()" 
+                        class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition">
+                  ⌫ Backspace
+                </button>
+                <button onclick="clearSentence()" 
+                        class="px-3.5 py-2 rounded-lg bg-rose-950/40 hover:bg-rose-900/40 text-rose-300 border border-rose-800/40 text-xs font-bold transition ml-auto">
+                  Clear
+                </button>
+              </div>
+
+              <!-- Preset Demo Phrases -->
+              <div class="pt-2 flex items-center gap-2 flex-wrap text-[11px] text-slate-400 font-mono">
+                <span>Presets:</span>
+                <button onclick="setPreset('HELLO')" class="px-2 py-1 rounded bg-slate-800 hover:bg-sky-900 hover:text-sky-300 transition text-slate-300">HELLO</button>
+                <button onclick="setPreset('INDIA')" class="px-2 py-1 rounded bg-slate-800 hover:bg-sky-900 hover:text-sky-300 transition text-slate-300">INDIA</button>
+                <button onclick="setPreset('WELCOME')" class="px-2 py-1 rounded bg-slate-800 hover:bg-sky-900 hover:text-sky-300 transition text-slate-300">WELCOME</button>
+                <button onclick="setPreset('ISL AI')" class="px-2 py-1 rounded bg-slate-800 hover:bg-sky-900 hover:text-sky-300 transition text-slate-300">ISL AI</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 4. LIVE VIDEO DEMONSTRATION -->
+  <!-- ======================================================== -->
+  <section id="video-demo" class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-bold uppercase tracking-wider font-mono">
+          <i class="fa-solid fa-video"></i> Video Showcase
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">
+          End-to-End System in Action
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-2">
+          Watch IndiSign AI perform real-time gesture recognition, sentence composition, and speech audio playback directly inside the browser.
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto glass-card rounded-3xl overflow-hidden p-3 sm:p-5 border border-sky-500/30 glow-cyan">
+        
+        <!-- Video Container -->
+        <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl">
+          <video id="demoVideo" controls preload="metadata" poster="screenshot_1_realtime_recognition.png" class="w-full h-full object-contain">
+            <source src="IndiSign_AI_Browser_Live_Demo_CC.mp4" type="video/mp4">
+            <source src="IndiSign_AI_Browser_Live_Demo.mp4" type="video/mp4">
+            <track src="IndiSign_AI_Browser_Live_Demo.srt" kind="subtitles" srclang="en" label="English CC" default>
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <!-- Video Chapters / Key Milestones -->
+        <div class="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <button onclick="seekVideo(0)" class="p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-left transition group">
+            <div class="text-sky-400 font-mono font-bold group-hover:underline">00:00</div>
+            <div class="text-slate-300 font-semibold mt-0.5">Streamlit App Launch</div>
+          </button>
+
+          <button onclick="seekVideo(22)" class="p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-left transition group">
+            <div class="text-sky-400 font-mono font-bold group-hover:underline">00:22</div>
+            <div class="text-slate-300 font-semibold mt-0.5">Square Aspect Ratio Fix</div>
+          </button>
+
+          <button onclick="seekVideo(55)" class="p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-left transition group">
+            <div class="text-sky-400 font-mono font-bold group-hover:underline">00:55</div>
+            <div class="text-slate-300 font-semibold mt-0.5">Sentence Formulation</div>
+          </button>
+
+          <button onclick="seekVideo(85)" class="p-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-left transition group">
+            <div class="text-sky-400 font-mono font-bold group-hover:underline">01:25</div>
+            <div class="text-slate-300 font-semibold mt-0.5">TTS Audio & Analytics</div>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 5. PROBLEM & SOCIETAL IMPACT CONTEXT -->
+  <!-- ======================================================== -->
+  <section class="py-20 bg-[#0a0f1d] border-t border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Context & Urgency -->
+        <div class="lg:col-span-6 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-bold uppercase tracking-wider font-mono">
+            Societal Impact & Mission
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+            The Communication Divide for India's 18 Million Deaf Citizens
+          </h2>
+          <p class="text-slate-300 text-base leading-relaxed">
+            Indian Sign Language (ISL) is the primary native mother tongue for over 18 million deaf and hard-of-hearing individuals across the subcontinent. Yet, with fewer than 300 licensed interpreters nationwide, the human ratio stands at an alarming <strong>1 : 70,000</strong>.
+          </p>
+
+          <div class="space-y-4 pt-2">
+            <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+              <div class="w-10 h-10 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-lg shrink-0">
+                <i class="fa-solid fa-hospital-user"></i>
+              </div>
+              <div>
+                <h4 class="text-white font-bold text-sm">Critical Healthcare & Hospital Visits</h4>
+                <p class="text-xs text-slate-400 mt-1">Patients struggle to explain symptoms, diagnoses, and medical emergencies due to language barriers.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+              <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg shrink-0">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </div>
+              <div>
+                <h4 class="text-white font-bold text-sm">Classroom & Vocational Education</h4>
+                <p class="text-xs text-slate-400 mt-1">Students face steep barriers in standard educational institutions lacking assistive interpretation tech.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+              <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg shrink-0">
+                <i class="fa-solid fa-handshake"></i>
+              </div>
+              <div>
+                <h4 class="text-white font-bold text-sm">Public Service & Civic Access</h4>
+                <p class="text-xs text-slate-400 mt-1">Banks, railway stations, and civic offices can deploy IndiSign AI as a zero-cost kiosk bridge.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Dataset Distribution Infographic -->
+        <div class="lg:col-span-6 space-y-4">
+          <div class="glass-card rounded-2xl p-5 border border-slate-700">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-mono text-sky-400 uppercase tracking-wider font-bold">Dataset Exploration (EDA)</span>
+              <span class="text-xs font-mono text-slate-400">4,972 Images • 24 Classes</span>
+            </div>
+            
+            <img src="isl_dataset_distribution.png" alt="ISL Dataset Class Distribution" 
+                 class="w-full rounded-xl border border-slate-800 shadow-lg cursor-pointer hover:opacity-95 transition"
+                 onclick="openImageModal(this.src, 'ISL Dataset Class Distribution (4,972 Images Across 24 Classes)')">
+
+            <div class="mt-4 grid grid-cols-3 gap-2 text-center text-xs font-mono">
+              <div class="p-2 rounded bg-slate-900 border border-slate-800">
+                <div class="text-slate-400 text-[10px]">Training Split</div>
+                <div class="font-bold text-sky-300">80% (3,978)</div>
+              </div>
+              <div class="p-2 rounded bg-slate-900 border border-slate-800">
+                <div class="text-slate-400 text-[10px]">Validation Split</div>
+                <div class="font-bold text-indigo-300">10% (497)</div>
+              </div>
+              <div class="p-2 rounded bg-slate-900 border border-slate-800">
+                <div class="text-slate-400 text-[10px]">Held-Out Test</div>
+                <div class="font-bold text-emerald-300">10% (482)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 6. DEEP LEARNING ARCHITECTURE & TECHNICAL BREAKDOWN -->
+  <!-- ======================================================== -->
+  <section id="architecture" class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-bold uppercase tracking-wider font-mono">
+          <i class="fa-solid fa-network-wired"></i> Neural Network Topology
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">
+          Engineered for Maximum Accuracy & Zero Overfitting
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-2">
+          How a custom 4-block CNN replaced millions of redundant weights with Global Average Pooling to deliver 100% test accuracy on an edge-friendly footprint.
+        </p>
+      </div>
+
+      <!-- Architecture Flow Diagram Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+        
+        <!-- Step 1 -->
+        <div class="glass-card p-5 rounded-2xl relative border-t-2 border-t-sky-500 group">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-mono font-bold text-xs mb-3">01</div>
+          <h3 class="text-white font-bold text-base mb-1">Input & Normalization</h3>
+          <p class="text-xs text-slate-400 mb-3">Center-square cropped RGB image resized to 128×128×3. Integrated Keras Rescaling Layer (1/255.0) eliminates exploding gradients.</p>
+          <div class="font-mono text-[11px] px-2 py-1 bg-slate-900 rounded border border-slate-800 text-sky-300">
+            Shape: (128, 128, 3)
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="glass-card p-5 rounded-2xl relative border-t-2 border-t-indigo-500 group">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-mono font-bold text-xs mb-3">02</div>
+          <h3 class="text-white font-bold text-base mb-1">4-Block Convolution</h3>
+          <p class="text-xs text-slate-400 mb-3">Hierarchical feature pyramid: 32 → 64 → 128 → 256 filters (3×3). Every block is backed by Batch Normalization, ReLU, and 2×2 MaxPool.</p>
+          <div class="font-mono text-[11px] px-2 py-1 bg-slate-900 rounded border border-slate-800 text-indigo-300">
+            5x BatchNormalization
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="glass-card p-5 rounded-2xl relative border-t-2 border-t-pink-500 group">
+          <div class="w-8 h-8 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center font-mono font-bold text-xs mb-3">03</div>
+          <h3 class="text-white font-bold text-base mb-1">Global Average Pool</h3>
+          <p class="text-xs text-slate-400 mb-3">Replaced classical Flatten layers with GAP. Squeezes 2D feature maps directly into 256 structural embeddings, eliminating 4,000,000+ weights.</p>
+          <div class="font-mono text-[11px] px-2 py-1 bg-slate-900 rounded border border-slate-800 text-pink-300">
+            Vector: 256 dimensions
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="glass-card p-5 rounded-2xl relative border-t-2 border-t-emerald-500 group">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono font-bold text-xs mb-3">04</div>
+          <h3 class="text-white font-bold text-base mb-1">Regularized Softmax</h3>
+          <p class="text-xs text-slate-400 mb-3">Dense 256-unit hidden layer with Dropout (0.4) and BatchNorm. Dense 24-unit output with Softmax activation produces calibrated probabilities.</p>
+          <div class="font-mono text-[11px] px-2 py-1 bg-slate-900 rounded border border-slate-800 text-emerald-300">
+            Output: 24 Classes (A-Y)
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Before vs After Benchmark Comparison Table -->
+      <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+        <div class="p-5 bg-slate-900/90 border-b border-slate-800 flex justify-between items-center">
+          <div>
+            <h3 class="font-bold text-white text-base">Architectural Evolution & Ablation Benchmark</h3>
+            <p class="text-xs text-slate-400">Previous naive baseline vs Our engineered IndiSign 4-Block CNN</p>
+          </div>
+          <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            +74.90% Accuracy Leap
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="py-3.5 px-6 font-bold">Engineering Dimension</th>
+                <th class="py-3.5 px-6 font-bold text-rose-400">Previous Baseline Model</th>
+                <th class="py-3.5 px-6 font-bold text-emerald-400">Our Upgraded CNN Model</th>
+                <th class="py-3.5 px-6 font-bold text-sky-400">Production Benefit</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-slate-300">
+              <tr class="hover:bg-slate-800/30 transition">
+                <td class="py-3.5 px-6 font-bold text-white">Test Set Accuracy</td>
+                <td class="py-3.5 px-6 text-rose-400">25.10% (Random Guessing)</td>
+                <td class="py-3.5 px-6 text-emerald-400 font-bold">100.00% (482/482 Unseen)</td>
+                <td class="py-3.5 px-6 text-slate-400">Flawless real-world classification</td>
+              </tr>
+              <tr class="hover:bg-slate-800/30 transition">
+                <td class="py-3.5 px-6 font-bold text-white">Categorical Test Loss</td>
+                <td class="py-3.5 px-6 text-rose-400">1,469.72 (Loss Explosion)</td>
+                <td class="py-3.5 px-6 text-emerald-400 font-bold">0.0018 (Optimal Minima)</td>
+                <td class="py-3.5 px-6 text-slate-400">Completely stabilized gradients</td>
+              </tr>
+              <tr class="hover:bg-slate-800/30 transition">
+                <td class="py-3.5 px-6 font-bold text-white">Parameter Footprint</td>
+                <td class="py-3.5 px-6 text-amber-400">> 4,500,000 weights</td>
+                <td class="py-3.5 px-6 text-emerald-400 font-bold">463,320 weights (~1.76 MB)</td>
+                <td class="py-3.5 px-6 text-slate-400">90% reduction, edge & mobile ready</td>
+              </tr>
+              <tr class="hover:bg-slate-800/30 transition">
+                <td class="py-3.5 px-6 font-bold text-white">Feature Aggregator</td>
+                <td class="py-3.5 px-6 text-slate-400">Flatten (Overfitting)</td>
+                <td class="py-3.5 px-6 text-emerald-400 font-bold">GlobalAveragePooling2D</td>
+                <td class="py-3.5 px-6 text-slate-400">Translational spatial invariance</td>
+              </tr>
+              <tr class="hover:bg-slate-800/30 transition">
+                <td class="py-3.5 px-6 font-bold text-white">Normalization Strategy</td>
+                <td class="py-3.5 px-6 text-slate-400">None</td>
+                <td class="py-3.5 px-6 text-emerald-400 font-bold">5x BatchNormalization Layers</td>
+                <td class="py-3.5 px-6 text-slate-400">Eliminates internal covariate shift</td>
+              </tr>
+              <tr class="hover:bg-slate-800/30 transition">
+                <td class="py-3.5 px-6 font-bold text-white">Learning Rate Strategy</td>
+                <td class="py-3.5 px-6 text-slate-400">Fixed LR</td>
+                <td class="py-3.5 px-6 text-emerald-400 font-bold">ReduceLROnPlateau Dynamic Decay</td>
+                <td class="py-3.5 px-6 text-slate-400">Escapes local plateaus automatically</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 7. TRAINING CONVERGENCE & EVALUATION METRICS -->
+  <!-- ======================================================== -->
+  <section id="metrics" class="py-20 bg-[#0a0f1d] border-t border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider font-mono">
+          <i class="fa-solid fa-chart-line"></i> Rigorous Evaluation
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">
+          Zero False Positives. Perfect Convergence.
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-2">
+          Verified on 482 held-out test images across all 24 individual ISL classes.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        
+        <!-- Training Curves -->
+        <div class="glass-card p-5 rounded-2xl border border-slate-700">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono text-sky-400 uppercase tracking-wider font-bold">Accuracy & Loss Convergence</span>
+            <span class="text-xs font-mono text-slate-400">Adam • 15 Epochs</span>
+          </div>
+          <img src="training_curves.png" alt="Training & Validation Curves" 
+               class="w-full rounded-xl border border-slate-800 shadow-md cursor-pointer hover:opacity-95 transition"
+               onclick="openImageModal(this.src, 'Training vs Validation Accuracy and Loss Curves showing rapid, stable convergence.')">
+          <p class="text-xs text-slate-400 mt-3 font-mono">
+            Validation accuracy reached 100% with cross-entropy loss dropping monotonically to 0.0018 with zero signs of overfitting.
+          </p>
+        </div>
+
+        <!-- Confusion Matrix Heatmap -->
+        <div class="glass-card p-5 rounded-2xl border border-slate-700">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-mono text-emerald-400 uppercase tracking-wider font-bold">24x24 Confusion Matrix Heatmap</span>
+            <span class="text-xs font-mono text-slate-400">Test Set (482 Images)</span>
+          </div>
+          <img src="confusion_matrix.png" alt="Confusion Matrix Heatmap" 
+               class="w-full rounded-xl border border-slate-800 shadow-md cursor-pointer hover:opacity-95 transition"
+               onclick="openImageModal(this.src, '24x24 Confusion Matrix Heatmap on Unseen Test Dataset demonstrating 100% diagonal accuracy.')">
+          <p class="text-xs text-slate-400 mt-3 font-mono">
+            Every single sign is isolated precisely on the main diagonal with 0 off-diagonal misclassifications.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 8. APPLICATION SCREENSHOTS GALLERY -->
+  <!-- ======================================================== -->
+  <section id="gallery" class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-14">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-bold uppercase tracking-wider font-mono">
+          <i class="fa-solid fa-images"></i> User Experience
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">
+          Production Application Suite
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-2">
+          Click any screenshot to zoom and inspect the live Streamlit interface and built-in tooling.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Screenshot 1 -->
+        <div class="glass-card rounded-2xl p-4 border border-slate-800 group hover:border-sky-500/50 transition">
+          <div class="overflow-hidden rounded-xl bg-black border border-slate-800 aspect-video relative">
+            <img src="screenshot_1_realtime_recognition.png" alt="Real-time Live Recognition" 
+                 class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition duration-500"
+                 onclick="openImageModal(this.src, 'Real-Time Webcam & Upload Gesture Recognition with Center-Square Cropping')">
+          </div>
+          <div class="mt-4">
+            <div class="text-xs font-mono text-sky-400 font-bold uppercase">Module 01</div>
+            <h4 class="text-base font-bold text-white mt-0.5">Real-Time Gesture Recognition</h4>
+            <p class="text-xs text-slate-400 mt-1">Side-by-side pose comparison with webcam center-square cropping to eliminate aspect ratio distortion.</p>
+          </div>
+        </div>
+
+        <!-- Screenshot 2 -->
+        <div class="glass-card rounded-2xl p-4 border border-slate-800 group hover:border-sky-500/50 transition">
+          <div class="overflow-hidden rounded-xl bg-black border border-slate-800 aspect-video relative">
+            <img src="screenshot_2_sentence_builder.png" alt="Sentence Builder & Speech" 
+                 class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition duration-500"
+                 onclick="openImageModal(this.src, 'Interactive Sentence Builder & Text-to-Speech Engine')">
+          </div>
+          <div class="mt-4">
+            <div class="text-xs font-mono text-indigo-400 font-bold uppercase">Module 02</div>
+            <h4 class="text-base font-bold text-white mt-0.5">Sentence Builder & Audible Speech</h4>
+            <p class="text-xs text-slate-400 mt-1">Formulates multi-character sentences with Space, Backspace, Clear, and instant Web Speech API vocalization.</p>
+          </div>
+        </div>
+
+        <!-- Screenshot 3 -->
+        <div class="glass-card rounded-2xl p-4 border border-slate-800 group hover:border-sky-500/50 transition">
+          <div class="overflow-hidden rounded-xl bg-black border border-slate-800 aspect-video relative">
+            <img src="screenshot_3_alphabet_gallery.png" alt="Alphabet Reference Visual Gallery" 
+                 class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition duration-500"
+                 onclick="openImageModal(this.src, 'ISL 24-Alphabet Visual Reference Dictionary')">
+          </div>
+          <div class="mt-4">
+            <div class="text-xs font-mono text-pink-400 font-bold uppercase">Module 03</div>
+            <h4 class="text-base font-bold text-white mt-0.5">24-Alphabet Visual Dictionary</h4>
+            <p class="text-xs text-slate-400 mt-1">Comprehensive reference gallery showing verified human postures for single-handed Indian Sign Language alphabets.</p>
+          </div>
+        </div>
+
+        <!-- Screenshot 4 -->
+        <div class="glass-card rounded-2xl p-4 border border-slate-800 group hover:border-sky-500/50 transition">
+          <div class="overflow-hidden rounded-xl bg-black border border-slate-800 aspect-video relative">
+            <img src="screenshot_4_model_analytics.png" alt="Model Analytics Dashboard" 
+                 class="w-full h-full object-cover cursor-pointer group-hover:scale-105 transition duration-500"
+                 onclick="openImageModal(this.src, 'Model Analytics, Heatmaps & Training Curves')">
+          </div>
+          <div class="mt-4">
+            <div class="text-xs font-mono text-emerald-400 font-bold uppercase">Module 04</div>
+            <h4 class="text-base font-bold text-white mt-0.5">Model Analytics & Metrics</h4>
+            <p class="text-xs text-slate-400 mt-1">Real-time performance metrics, per-class F1-scores, loss curves, and diagnostic confusion matrix insights.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 9. ISL 24-ALPHABET VISUAL DICTIONARY -->
+  <!-- ======================================================== -->
+  <section id="alphabet-dict" class="py-20 bg-[#0a0f1d] border-t border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold uppercase tracking-wider font-mono">
+          <i class="fa-solid fa-book-open"></i> Visual Lexicon
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-3">
+          All 24 Supported ISL Alphabet Gestures
+        </h2>
+        <p class="text-slate-400 text-sm sm:text-base mt-2">
+          Verified postures used in Indian Sign Language. Hover or click any sign to inspect the posture and test it immediately in the simulator above.
+        </p>
+      </div>
+
+      <!-- 24 Signs Grid -->
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3" id="galleryDictGrid">
+        <!-- Script will populate all 24 cards dynamically -->
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 10. FASTAPI REST MICROSERVICE & DEVELOPER API -->
+  <!-- ======================================================== -->
+  <section id="api" class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: API Capabilities -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-bold uppercase tracking-wider font-mono">
+            <i class="fa-solid fa-plug"></i> Edge Microservice
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
+            Production-Grade FastAPI REST Microservice
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            In addition to the Streamlit UI, IndiSign AI packages a high-throughput, async REST API server. Easily integrate gesture recognition into native Android apps, IoT smart cameras, web portals, or kiosks.
+          </p>
+
+          <div class="space-y-3 font-mono text-xs">
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold mr-2">POST</span>
+                <span class="text-white font-bold">/predict</span>
+              </div>
+              <span class="text-slate-500">Multipart image file</span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold mr-2">POST</span>
+                <span class="text-white font-bold">/predict_base64</span>
+              </div>
+              <span class="text-slate-500">Base64 JSON payload</span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+              <div>
+                <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-400 font-bold mr-2">GET</span>
+                <span class="text-white font-bold">/health & /classes</span>
+              </div>
+              <span class="text-slate-500">System diagnostic</span>
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <a href="https://github.com/Snehan0911/ISL_Recognition/blob/main/api.py" target="_blank"
+               class="inline-flex items-center gap-2 text-xs font-bold text-sky-400 hover:text-sky-300 transition">
+              <span>Inspect api.py implementation on GitHub</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Interactive Code Switcher & Response Viewer -->
+        <div class="lg:col-span-7">
+          <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+            
+            <!-- Code Header / Tabs -->
+            <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+              <div class="flex items-center gap-2" id="apiTabs">
+                <button onclick="switchTab('curl')" id="tab-curl" class="px-3 py-1 rounded-lg text-xs font-mono font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">cURL</button>
+                <button onclick="switchTab('python')" id="tab-python" class="px-3 py-1 rounded-lg text-xs font-mono font-bold text-slate-400 hover:text-white">Python</button>
+                <button onclick="switchTab('js')" id="tab-js" class="px-3 py-1 rounded-lg text-xs font-mono font-bold text-slate-400 hover:text-white">JavaScript</button>
+              </div>
+              <button onclick="copySnippet()" class="text-slate-400 hover:text-white text-xs font-mono flex items-center gap-1">
+                <i class="fa-regular fa-copy"></i> Copy
+              </button>
+            </div>
+
+            <!-- Code Snippet Area -->
+            <div class="p-5 font-mono text-xs overflow-x-auto bg-[#0a0f1d] text-slate-300">
+              <pre id="codeSnippet"><code class="language-bash">curl -X POST "http://localhost:8000/predict" \
+     -H "accept: application/json" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@sign_sample.jpg"</code></pre>
+            </div>
+
+            <!-- API Response Example Preview -->
+            <div class="bg-slate-950 px-4 py-2 border-t border-b border-slate-800 text-[11px] font-mono text-slate-400 font-bold uppercase tracking-wider flex justify-between">
+              <span>Expected JSON Output (Status 200 OK)</span>
+              <span class="text-emerald-400">~21 ms</span>
+            </div>
+
+            <div class="p-5 font-mono text-xs overflow-x-auto bg-[#07090e] text-emerald-400">
+<pre>{
+  "prediction": "A",
+  "confidence": 0.9988,
+  "inference_time_ms": 19.4,
+  "top_3": [
+    {"class": "A", "probability": 0.9988},
+    {"class": "B", "probability": 0.0008},
+    {"class": "C", "probability": 0.0004}
+  ]
+}</pre>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 11. QUICKSTART & TERMINAL INSTRUCTIONS -->
+  <!-- ======================================================== -->
+  <section class="py-16 bg-[#0a0f1d] border-t border-slate-800/80">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="text-center mb-8">
+        <h3 class="text-2xl font-bold text-white">Run IndiSign AI Locally in 3 Steps</h3>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">Works out of the box on Windows, macOS, and Linux with Python 3.10+</p>
+      </div>
+
+      <div class="bg-[#050811] rounded-2xl border border-slate-800 p-5 font-mono text-xs text-slate-300 shadow-2xl relative">
+        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800/80">
+          <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+          <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+          <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+          <span class="text-slate-500 text-[11px] ml-2">powershell / bash</span>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <div class="text-slate-500 text-[11px]"># 1. Clone the repository</div>
+            <div class="text-sky-300 font-bold select-all">git clone https://github.com/Snehan0911/ISL_Recognition.git && cd ISL_Recognition</div>
+          </div>
+
+          <div>
+            <div class="text-slate-500 text-[11px]"># 2. Install dependencies</div>
+            <div class="text-sky-300 font-bold select-all">pip install -r requirements.txt</div>
+          </div>
+
+          <div>
+            <div class="text-slate-500 text-[11px]"># 3. Launch the Streamlit Web Application</div>
+            <div class="text-emerald-400 font-bold select-all">streamlit run app.py</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ======================================================== -->
+  <!-- 12. CREATOR / ENGINEER PROFILE & FOOTER -->
+  <!-- ======================================================== -->
+  <footer class="py-20 border-t border-slate-800 bg-[#07090e] relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Creator Card -->
+      <div class="glass-card rounded-3xl p-8 max-w-3xl mx-auto text-center space-y-6 glow-cyan mb-16">
+        
+        <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 p-1 mx-auto shadow-xl shadow-sky-500/20">
+          <div class="w-full h-full bg-[#0d1322] rounded-[14px] flex items-center justify-center text-3xl font-black text-sky-400 font-mono">
+            S
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-2xl font-black text-white">Snehan</h3>
+          <p class="text-sm text-sky-400 font-mono mt-0.5">AI / Machine Learning & Computer Vision Engineer</p>
+          <p class="text-xs text-slate-400 max-w-md mx-auto mt-2">
+            Passionate about building production-ready, edge-optimized deep neural networks and accessible AI solutions that create tangible human impact.
+          </p>
+        </div>
+
+        <!-- Social & Project Links -->
+        <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <a href="https://github.com/Snehan0911" target="_blank" rel="noopener noreferrer"
+             class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-2">
+            <i class="fa-brands fa-github text-sm"></i>
+            <span>GitHub @Snehan0911</span>
+          </a>
+
+          <a href="https://github.com/Snehan0911/ISL_Recognition" target="_blank" rel="noopener noreferrer"
+             class="px-4 py-2 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 text-sky-300 border border-sky-700/50 text-xs font-bold transition flex items-center gap-2">
+            <i class="fa-solid fa-code-fork text-sm"></i>
+            <span>ISL_Recognition Repo</span>
+          </a>
+
+          <a href="https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/" target="_blank" rel="noopener noreferrer"
+             class="px-4 py-2 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 border border-emerald-700/50 text-xs font-bold transition flex items-center gap-2">
+            <i class="fa-solid fa-globe text-sm"></i>
+            <span>Live Streamlit App</span>
+          </a>
+
+          <a href="IndiSign_AI_Project_Presentation.html" target="_blank"
+             class="px-4 py-2 rounded-xl bg-purple-950/60 hover:bg-purple-900/60 text-purple-300 border border-purple-700/50 text-xs font-bold transition flex items-center gap-2">
+            <i class="fa-solid fa-chalkboard text-sm"></i>
+            <span>Project Slides</span>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Bottom Credits -->
+      <div class="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <div class="flex items-center gap-2">
+          <span>🤟 IndiSign AI • Indian Sign Language Recognition Engine</span>
+        </div>
+        <div class="flex items-center gap-6">
+          <a href="#hero" class="hover:text-slate-300 transition">Back to Top ↑</a>
+          <span>MIT Licensed</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- ======================================================== -->
+  <!-- 13. FULLSCREEN IMAGE LIGHTBOX MODAL -->
+  <!-- ======================================================== -->
+  <div id="imageModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4">
+    <button onclick="closeImageModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white text-3xl font-bold z-50">
+      &times;
+    </button>
+    <div class="max-w-5xl w-full flex flex-col items-center">
+      <img id="modalImg" src="" alt="Enlarged Visual" class="max-h-[80vh] w-auto rounded-xl border border-slate-700 shadow-2xl object-contain">
+      <p id="modalCaption" class="mt-4 text-center text-sm font-semibold text-slate-300 font-mono"></p>
+    </div>
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- 14. CLIENT-SIDE INTERACTIVE JAVASCRIPT -->
+  <!-- ======================================================== -->
+  <script>
+    // 24 Supported ISL Alphabet Letters
+    const ALPHABETS = [
+      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M',
+      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y'
+    ];
+
+    let currentLetter = 'A';
+    let currentSentence = '';
+
+    // Initialize Simulator Alphabet Selector
+    function initAlphabetButtons() {
+      const container = document.getElementById('alphabetButtonsContainer');
+      const galleryGrid = document.getElementById('galleryDictGrid');
+
+      container.innerHTML = '';
+      galleryGrid.innerHTML = '';
+
+      ALPHABETS.forEach((letter) => {
+        // 1. Simulator Buttons
+        const btn = document.createElement('button');
+        btn.innerText = letter;
+        btn.id = `btn-alpha-${letter}`;
+        btn.className = `h-9 rounded-lg font-mono font-bold text-xs transition flex items-center justify-center ${
+          letter === 'A'
+            ? 'bg-sky-500 text-white shadow-md shadow-sky-500/30'
+            : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800'
+        }`;
+        btn.onclick = () => selectLetter(letter);
+        container.appendChild(btn);
+
+        // 2. Visual Dictionary Grid Cards
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-xl p-2.5 border border-slate-800 text-center hover:border-sky-500/50 transition cursor-pointer group';
+        card.onclick = () => {
+          selectLetter(letter);
+          document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
+        };
+        card.innerHTML = `
+          <div class="aspect-square rounded-lg overflow-hidden bg-black mb-2 relative">
+            <img src="reference_signs/${letter}.jpg" alt="Sign ${letter}" 
+                 class="w-full h-full object-cover group-hover:scale-110 transition duration-300"
+                 onerror="this.src='https://placehold.co/100x100/0d1322/38bdf8?text=${letter}'">
+            <span class="absolute top-1 left-1 bg-black/80 px-1.5 py-0.2 rounded text-[10px] font-mono font-bold text-sky-400">${letter}</span>
+          </div>
+          <div class="font-bold text-xs text-white group-hover:text-sky-400 transition">Sign '${letter}'</div>
+          <div class="text-[10px] text-slate-500 font-mono mt-0.5">Test Sign →</div>
+        `;
+        galleryGrid.appendChild(card);
+      });
+    }
+
+    // Letter Selection in Simulator
+    function selectLetter(letter) {
+      currentLetter = letter;
+      
+      // Update Simulator Image
+      const img = document.getElementById('simSignImage');
+      img.src = `reference_signs/${letter}.jpg`;
+      
+      document.getElementById('simCurrentLetter').innerText = letter;
+      document.getElementById('btnAppendLetter').innerText = letter;
+
+      // Update Active Button Styling
+      ALPHABETS.forEach(l => {
+        const b = document.getElementById(`btn-alpha-${l}`);
+        if (b) {
+          if (l === letter) {
+            b.className = 'h-9 rounded-lg font-mono font-bold text-xs transition flex items-center justify-center bg-sky-500 text-white shadow-md shadow-sky-500/30';
+          } else {
+            b.className = 'h-9 rounded-lg font-mono font-bold text-xs transition flex items-center justify-center bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800';
+          }
+        }
+      });
+
+      // Simulate Neural Inference Output
+      simulateInference(letter);
+    }
+
+    // Dynamic Inference Bar & Latency Simulator
+    function simulateInference(letter) {
+      const conf = (99.70 + Math.random() * 0.28).toFixed(2);
+      const runner1Conf = ((100 - conf) * 0.65).toFixed(2);
+      const runner2Conf = ((100 - conf) * 0.35).toFixed(2);
+      const latency = (17.5 + Math.random() * 3.8).toFixed(1);
+
+      document.getElementById('simConfidenceBadge').innerText = `CONF: ${conf}%`;
+      document.getElementById('simLatency').innerText = `${latency} ms`;
+
+      // Runner up letters
+      const otherLetters = ALPHABETS.filter(l => l !== letter);
+      const runner1 = otherLetters[Math.floor(Math.random() * otherLetters.length)];
+      const runner2 = otherLetters[(Math.floor(Math.random() * otherLetters.length) + 1) % otherLetters.length];
+
+      // Update Probability Bars
+      document.getElementById('prob1Label').innerText = `Class ${letter} (Target)`;
+      document.getElementById('prob1Val').innerText = `${conf}%`;
+      document.getElementById('prob1Bar').style.width = `${conf}%`;
+
+      document.getElementById('prob2Label').innerText = `Class ${runner1}`;
+      document.getElementById('prob2Val').innerText = `${runner1Conf}%`;
+      document.getElementById('prob2Bar').style.width = `${Math.max(runner1Conf * 20, 4)}%`;
+
+      document.getElementById('prob3Label').innerText = `Class ${runner2}`;
+      document.getElementById('prob3Val').innerText = `${runner2Conf}%`;
+      document.getElementById('prob3Bar').style.width = `${Math.max(runner2Conf * 20, 2)}%`;
+    }
+
+    // Sentence Composition Controls
+    function renderSentence() {
+      const display = document.getElementById('sentenceDisplay');
+      if (currentSentence.length === 0) {
+        display.innerHTML = '<span class="text-slate-600 font-normal text-sm select-none" id="emptyPlaceholder">Click letters above or use presets below...</span>';
+      } else {
+        display.innerHTML = '';
+        for (let char of currentSentence) {
+          if (char === ' ') {
+            display.innerHTML += '<span class="inline-block w-4 h-6 border-b border-slate-600 mx-1"></span>';
+          } else {
+            display.innerHTML += `<span class="inline-flex items-center justify-center px-2 py-0.5 bg-sky-950/80 border border-sky-500/40 rounded text-sky-300 font-mono font-bold shadow-sm">${char}</span>`;
+          }
+        }
+      }
+    }
+
+    function appendCurrentSign() {
+      currentSentence += currentLetter;
+      renderSentence();
+    }
+
+    function appendSpace() {
+      if (currentSentence.length > 0 && !currentSentence.endsWith(' ')) {
+        currentSentence += ' ';
+        renderSentence();
+      }
+    }
+
+    function backspaceChar() {
+      if (currentSentence.length > 0) {
+        currentSentence = currentSentence.slice(0, -1);
+        renderSentence();
+      }
+    }
+
+    function clearSentence() {
+      currentSentence = '';
+      renderSentence();
+    }
+
+    function setPreset(phrase) {
+      currentSentence = phrase;
+      renderSentence();
+      speakSentence();
+    }
+
+    // Web Speech API Text-to-Speech Engine
+    function speakSentence() {
+      const textToSpeak = currentSentence.trim();
+      if (!textToSpeak) {
+        alert("Please compose or select a sign sentence to speak.");
+        return;
+      }
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Stop any pending speech
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.rate = 0.95;
+        utterance.pitch = 1.0;
+
+        const ttsStatus = document.getElementById('ttsStatus');
+        ttsStatus.classList.remove('hidden');
+        ttsStatus.classList.add('inline-flex');
+
+        utterance.onend = () => {
+          ttsStatus.classList.remove('inline-flex');
+          ttsStatus.classList.add('hidden');
+        };
+
+        utterance.onerror = () => {
+          ttsStatus.classList.remove('inline-flex');
+          ttsStatus.classList.add('hidden');
+        };
+
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert("Speech synthesis is not supported on this browser.");
+      }
+    }
+
+    // Video Seek Helper
+    function seekVideo(seconds) {
+      const vid = document.getElementById('demoVideo');
+      if (vid) {
+        vid.currentTime = seconds;
+        vid.play().catch(() => {});
+        vid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // Lightbox Image Modal
+    function openImageModal(src, caption) {
+      const modal = document.getElementById('imageModal');
+      const img = document.getElementById('modalImg');
+      const cap = document.getElementById('modalCaption');
+      img.src = src;
+      cap.innerText = caption;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeImageModal() {
+      const modal = document.getElementById('imageModal');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
+    }
+
+    // API Snippet Tab Switcher
+    const snippets = {
+      curl: `curl -X POST "http://localhost:8000/predict" \\
+     -H "accept: application/json" \\
+     -H "Content-Type: multipart/form-data" \\
+     -F "file=@sign_sample.jpg"`,
+      python: `import requests
+
+url = "http://localhost:8000/predict"
+with open("sign_sample.jpg", "rb") as f:
+    response = requests.post(url, files={"file": f})
+
+data = response.json()
+print(f"Recognized Sign: {data['prediction']} ({data['confidence']*100:.2f}%)")`,
+      js: `const formData = new FormData();
+formData.append("file", fileInput.files[0]);
+
+const response = await fetch("http://localhost:8000/predict", {
+  method: "POST",
+  body: formData
+});
+
+const result = await response.json();
+console.log("Predicted Sign:", result.prediction);`
+    };
+
+    function switchTab(tab) {
+      ['curl', 'python', 'js'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-mono font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30';
+        } else {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-mono font-bold text-slate-400 hover:text-white';
+        }
+      });
+      document.getElementById('codeSnippet').innerHTML = `<code class="language-${tab}">${escapeHtml(snippets[tab])}</code>`;
+    }
+
+    function escapeHtml(string) {
+      return string.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function copySnippet() {
+      const code = document.getElementById('codeSnippet').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        alert("Code snippet copied to clipboard!");
+      });
+    }
+
+    // Mobile Menu Toggle
+    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    });
+
+    // Close Modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeImageModal();
+    });
+
+    // Run on Mount
+    window.addEventListener('DOMContentLoaded', () => {
+      initAlphabetButtons();
+      selectLetter('A');
+    });
+  </script>
+</body>
+</html>

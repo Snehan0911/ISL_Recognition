@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IndiSign AI - Project Presentation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0b0f19;
+      color: #f1f5f9;
+      overflow: hidden;
+    }
+    .slide {
+      display: none;
+      height: calc(100vh - 80px);
+    }
+    .slide.active {
+      display: flex;
+    }
+    .card-panel {
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 1.25rem;
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col justify-between select-none">
+
+  <!-- Top Presentation Header -->
+  <header class="h-16 px-8 flex items-center justify-between border-b border-slate-800 bg-[#0d1322]">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">🤟</span>
+      <span class="font-extrabold text-white text-lg tracking-tight">IndiSign AI</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">Project Presentation</span>
+    </div>
+    <div class="flex items-center gap-6">
+      <div id="slideCounter" class="text-sm font-mono text-sky-400 font-bold">Slide 1 / 10</div>
+      <button onclick="toggleFullScreen()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300">
+        <i class="fa-solid fa-expand"></i> Fullscreen
+      </button>
+    </div>
+  </header>
+
+  <!-- SLIDES CONTAINER -->
+  <main class="flex-1 overflow-y-auto p-8 max-w-7xl mx-auto w-full flex items-center justify-center">
+
+    <!-- SLIDE 1: Title -->
+    <div class="slide active flex-col justify-center items-center text-center space-y-6 w-full">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-bold uppercase tracking-wider">
+        Capstone Deep Learning & Computer Vision
+      </div>
+      <h1 class="text-5xl lg:text-6xl font-black bg-gradient-to-r from-sky-400 via-indigo-400 to-pink-400 bg-clip-text text-transparent leading-tight">
+        IndiSign AI: Indian Sign Language Recognition
+      </h1>
+      <p class="text-xl text-slate-300 max-w-3xl">
+        An assistive vision-based deep neural network translating Indian Sign Language gestures into real-time text and speech synthesis.
+      </p>
+      
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl w-full pt-4">
+        <div class="card-panel p-4 text-center">
+          <div class="text-3xl font-black text-emerald-400">100.00%</div>
+          <div class="text-xs text-slate-400 font-semibold mt-1">Test Set Accuracy</div>
+        </div>
+        <div class="card-panel p-4 text-center">
+          <div class="text-3xl font-black text-sky-400">0.0018</div>
+          <div class="text-xs text-slate-400 font-semibold mt-1">Categorical Test Loss</div>
+        </div>
+        <div class="card-panel p-4 text-center">
+          <div class="text-3xl font-black text-purple-400">463K</div>
+          <div class="text-xs text-slate-400 font-semibold mt-1">Lightweight Parameters</div>
+        </div>
+        <div class="card-panel p-4 text-center">
+          <div class="text-3xl font-black text-amber-400">~20 ms</div>
+          <div class="text-xs text-slate-400 font-semibold mt-1">Edge Inference (50 FPS)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Problem Statement & Motivation -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div class="text-sky-400 text-xs font-bold tracking-wider uppercase">01 / Motivation & Context</div>
+      <h2 class="text-4xl font-extrabold text-white">The Communication Gap in India</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div class="card-panel p-6 space-y-3">
+          <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl font-bold">18M+</div>
+          <h3 class="text-lg font-bold text-white">Deaf & Hard-of-Hearing Population</h3>
+          <p class="text-sm text-slate-400">India has one of the world's largest deaf communities relying primarily on Indian Sign Language (ISL) for daily communication.</p>
+        </div>
+        <div class="card-panel p-6 space-y-3">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold">1:70k</div>
+          <h3 class="text-lg font-bold text-white">Acute Shortage of Interpreters</h3>
+          <p class="text-sm text-slate-400">With fewer than 300 certified ISL interpreters nationwide, deaf individuals face severe barriers in hospitals, schools, and workplaces.</p>
+        </div>
+        <div class="card-panel p-6 space-y-3">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-check"></i></div>
+          <h3 class="text-lg font-bold text-white">The IndiSign AI Solution</h3>
+          <p class="text-sm text-slate-400">An edge-friendly, camera-based neural network that translates fingerspelled signs into continuous sentences with audible speech synthesis.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Dataset & EDA -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div class="text-sky-400 text-xs font-bold tracking-wider uppercase">02 / Data Engineering</div>
+      <h2 class="text-4xl font-extrabold text-white">Dataset & Exploratory Analysis</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        <div class="space-y-4">
+          <div class="card-panel p-5">
+            <h4 class="font-bold text-white text-base mb-1">Dataset Overview</h4>
+            <ul class="text-sm text-slate-300 space-y-2">
+              <li>• <strong>4,972 Total Images</strong> across 24 distinct alphabet classes.</li>
+              <li>• <strong>Classes</strong>: A, B, C, D, E, F, G, H, I, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y.</li>
+              <li>• <strong>Dynamic Signs ('J' & 'Z')</strong>: Omitted because they require 3D spatial motion tracing over time, unsuited for single static frames.</li>
+            </ul>
+          </div>
+          <div class="card-panel p-5">
+            <h4 class="font-bold text-white text-base mb-1">Stratified Split Pipeline</h4>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs mt-3">
+              <div class="bg-indigo-950/60 p-3 rounded-lg border border-indigo-800">
+                <div class="text-lg font-bold text-indigo-400">80%</div>
+                <div class="text-slate-400 mt-1">Train (3,978)</div>
+              </div>
+              <div class="bg-purple-950/60 p-3 rounded-lg border border-purple-800">
+                <div class="text-lg font-bold text-purple-400">10%</div>
+                <div class="text-slate-400 mt-1">Val (497)</div>
+              </div>
+              <div class="bg-emerald-950/60 p-3 rounded-lg border border-emerald-800">
+                <div class="text-lg font-bold text-emerald-400">10%</div>
+                <div class="text-slate-400 mt-1">Test (482)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-panel p-4 flex items-center justify-center">
+          <img src="isl_dataset_distribution.png" alt="Dataset Distribution" class="rounded-lg max-h-72 object-contain shadow-lg">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Architecture -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div class="text-sky-400 text-xs font-bold tracking-wider uppercase">03 / Model Architecture</div>
+      <h2 class="text-4xl font-extrabold text-white">4-Block Deep CNN with Global Average Pooling</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-3 pt-2">
+        <div class="card-panel p-4 text-center space-y-2 border-sky-500/40">
+          <div class="text-xs font-bold text-sky-400 uppercase">Input</div>
+          <div class="text-base font-bold text-white">128 × 128 × 3</div>
+          <div class="text-xs text-slate-400">Rescaling (1/255.0) for gradient stability</div>
+        </div>
+        <div class="card-panel p-4 text-center space-y-2 border-indigo-500/40">
+          <div class="text-xs font-bold text-indigo-400 uppercase">Blocks 1 & 2</div>
+          <div class="text-base font-bold text-white">Conv2D (32, 64)</div>
+          <div class="text-xs text-slate-400">BatchNorm + ReLU + MaxPool(2x2)</div>
+        </div>
+        <div class="card-panel p-4 text-center space-y-2 border-purple-500/40">
+          <div class="text-xs font-bold text-purple-400 uppercase">Blocks 3 & 4</div>
+          <div class="text-base font-bold text-white">Conv2D (128, 256)</div>
+          <div class="text-xs text-slate-400">Finger contour and pose geometry extraction</div>
+        </div>
+        <div class="card-panel p-4 text-center space-y-2 border-emerald-500/40">
+          <div class="text-xs font-bold text-emerald-400 uppercase">GAP Head</div>
+          <div class="text-base font-bold text-white">GlobalAvgPool2D</div>
+          <div class="text-xs text-slate-400 font-semibold text-emerald-300">Eliminates 4M weights, stops overfitting</div>
+        </div>
+        <div class="card-panel p-4 text-center space-y-2 border-rose-500/40">
+          <div class="text-xs font-bold text-rose-400 uppercase">Output</div>
+          <div class="text-base font-bold text-white">Dense(24, Softmax)</div>
+          <div class="text-xs text-slate-400">Dropout(0.4) + BatchNorm regularized</div>
+        </div>
+      </div>
+
+      <div class="card-panel p-5 mt-4 bg-slate-900/80">
+        <h4 class="font-bold text-white text-sm mb-2 text-sky-400">Key Architectural Advantage: Global Average Pooling (GAP)</h4>
+        <p class="text-xs text-slate-300 leading-relaxed">
+          Traditional baseline CNNs flatten 4x4x256 feature maps into dense layers requiring over <strong>4,000,000 parameters</strong>, leading to severe overfitting. By introducing <code>GlobalAveragePooling2D</code>, the model computes spatial averages per feature map, slashing total parameters down to <strong>463,320 (~1.76 MB)</strong> with zero loss in representational capacity.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Training & Optimization -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div class="text-sky-400 text-xs font-bold tracking-wider uppercase">04 / Optimization Pipeline</div>
+      <h2 class="text-4xl font-extrabold text-white">Dynamic Learning Rate & Convergence</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        <div class="card-panel p-4 flex items-center justify-center">
+          <img src="training_curves.png" alt="Training Curves" class="rounded-lg max-h-72 object-contain shadow-lg">
+        </div>
+        <div class="space-y-4">
+          <div class="card-panel p-5">
+            <h4 class="font-bold text-white text-base mb-2">Automated Callback Suite</h4>
+            <ul class="text-sm text-slate-300 space-y-2.5">
+              <li>• <strong>ReduceLROnPlateau</strong>: Halves learning rate (factor=0.5, min_lr=1e-6) when validation loss plateaus, enabling smooth convergence to the global minimum.</li>
+              <li>• <strong>EarlyStopping</strong>: Monitored validation loss (patience=4) with automatic restoration of optimal weights.</li>
+              <li>• <strong>ModelCheckpoint</strong>: Persisted only peak validation accuracy checkpoints.</li>
+            </ul>
+          </div>
+          <div class="card-panel p-5">
+            <h4 class="font-bold text-white text-base mb-1">Loss & Optimization Strategy</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Trained with Adam optimizer (initial learning rate = 1e-3) minimizing Categorical Cross-Entropy across one-hot encoded labels.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Results & Confusion Matrix -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div class="text-sky-400 text-xs font-bold tracking-wider uppercase">05 / Quantitative Benchmarks</div>
+      <h2 class="text-4xl font-extrabold text-white">100.00% Test Accuracy across 24 Classes</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        <div class="space-y-4">
+          <div class="card-panel p-5">
+            <h4 class="font-bold text-white text-base mb-3">Model Comparison</h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-300">
+                <thead class="text-slate-400 border-b border-slate-700">
+                  <tr><th class="pb-2">Metric</th><th class="pb-2">Baseline Model</th><th class="pb-2 text-emerald-400">Our Upgraded CNN</th></tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800">
+                  <tr><td class="py-2 font-semibold">Test Accuracy</td><td class="text-rose-400">25.10%</td><td class="text-emerald-400 font-bold">100.00% (+74.9%)</td></tr>
+                  <tr><td class="py-2 font-semibold">Test Loss</td><td class="text-rose-400">1,469.72</td><td class="text-emerald-400 font-bold">0.0018 (Converged)</td></tr>
+                  <tr><td class="py-2 font-semibold">Macro F1-Score</td><td class="text-rose-400">0.2410</td><td class="text-emerald-400 font-bold">1.0000</td></tr>
+                  <tr><td class="py-2 font-semibold">Parameters</td><td>4.5 Million</td><td class="text-sky-400 font-bold">463,320 (88% reduction)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-panel p-4 text-xs text-slate-400">
+            ✅ <strong>482 out of 482</strong> unseen held-out test images correctly predicted without a single misclassification.
+          </div>
+        </div>
+        <div class="card-panel p-4 flex items-center justify-center">
+          <img src="confusion_matrix.png" alt="Confusion Matrix" class="rounded-lg max-h-72 object-contain shadow-lg">
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Assistive Features -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div class="text-sky-400 text-xs font-bold tracking-wider uppercase">06 / Assistive Technology</div>
+      <h2 class="text-4xl font-extrabold text-white">Interactive Word Builder & Speech Synthesis</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        <div class="card-panel p-6 space-y-3">
+          <div class="w-12 h-12 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-xl"><i class="fa-solid fa-camera"></i></div>
+          <h3 class="text-lg font-bold text-white">Square Center-Cropping</h3>
+          <p class="text-sm text-slate-400">Prevents wide-angle webcams (16:9) from squashing the hand into 128x128, preserving natural anatomical finger contours.</p>
+        </div>
+        <div class="card-panel p-6 space-y-3">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl"><i class="fa-solid fa-spell-check"></i></div>
+          <h3 class="text-lg font-bold text-white">Sentence & Word Builder</h3>
+          <p class="text-sm text-slate-400">Stores sequential signs into words with <code>␣ Space</code>, <code>⌫ Backspace</code>, and <code>Clear</code> controls so signers can communicate complete thoughts.</p>
+        </div>
+        <div class="card-panel p-6 space-y-3">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl"><i class="fa-solid fa-volume-high"></i></div>
+          <h3 class="text-lg font-bold text-white">Text-to-Speech Engine</h3>
+          <p class="text-sm text-slate-400">Integrates HTML5 Web Speech Synthesis to audibly voice sentences for hearing individuals in classrooms, clinics, and counters.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Screenshots Gallery -->
+    <div class="slide flex-col justify-center space-y-4 w-full">
+      <div class="text-sky-400 text-xs font-bold tracking-wider uppercase">07 / Application Interface</div>
+      <h2 class="text-3xl font-extrabold text-white">Live System Screenshots</h2>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <div class="card-panel p-2">
+          <img src="screenshot_1_realtime_recognition.png" alt="Realtime Recognition" class="rounded-lg max-h-48 w-full object-cover shadow">
+          <div class="text-xs font-bold text-sky-400 p-2">Real-Time Gesture Recognition & Latency</div>
+        </div>
+        <div class="card-panel p-2">
+          <img src="screenshot_2_sentence_builder.png" alt="Sentence Builder" class="rounded-lg max-h-48 w-full object-cover shadow">
+          <div class="text-xs font-bold text-emerald-400 p-2">Interactive Sentence Builder & Speech</div>
+        </div>
+        <div class="card-panel p-2">
+          <img src="screenshot_3_alphabet_gallery.png" alt="Alphabet Gallery" class="rounded-lg max-h-48 w-full object-cover shadow">
+          <div class="text-xs font-bold text-purple-400 p-2">24-Sign Visual ISL Flashcard Gallery</div>
+        </div>
+        <div class="card-panel p-2">
+          <img src="screenshot_4_model_analytics.png" alt="Analytics" class="rounded-lg max-h-48 w-full object-cover shadow">
+          <div class="text-xs font-bold text-amber-400 p-2">Model Performance Analytics Dashboard</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Full-Stack Architecture -->
+    <div class="slide flex-col justify-center space-y-6 w-full">
+      <div class="text-sky-400 text-xs font-bold tracking-wider uppercase">08 / Software Architecture</div>
+      <h2 class="text-4xl font-extrabold text-white">Full-Stack Deployment & API</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        <div class="card-panel p-6 space-y-3">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">🌐</span>
+            <div>
+              <h3 class="text-lg font-bold text-white">Streamlit Web Application</h3>
+              <p class="text-xs text-slate-400">Frontend UI with Web Speech API integration</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-300">Deployed live on Streamlit Community Cloud with instant sample sign tester, webcam input, and visual reference gallery.</p>
+          <div class="text-xs font-mono text-sky-400 bg-slate-900 p-2.5 rounded border border-slate-800 select-all">
+            streamlit run app.py
+          </div>
+        </div>
+        <div class="card-panel p-6 space-y-3">
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">⚡</span>
+            <div>
+              <h3 class="text-lg font-bold text-white">FastAPI REST API</h3>
+              <p class="text-xs text-slate-400">High-throughput microservice backend</p>
+            </div>
+          </div>
+          <p class="text-sm text-slate-300">Provides <code>/predict</code> and <code>/predict/base64</code> endpoints for mobile and edge integration with automated Swagger docs.</p>
+          <div class="text-xs font-mono text-emerald-400 bg-slate-900 p-2.5 rounded border border-slate-800 select-all">
+            uvicorn api:app --host 0.0.0.0 --port 8000
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Conclusion & Links -->
+    <div class="slide flex-col justify-center items-center text-center space-y-6 w-full">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+        Summary & Resources
+      </div>
+      <h2 class="text-5xl font-extrabold text-white">Thank You!</h2>
+      <p class="text-lg text-slate-300 max-w-2xl">
+        IndiSign AI demonstrates how lightweight, well-engineered deep learning can provide life-changing assistive communication.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full pt-4">
+        <div class="card-panel p-4 text-left">
+          <div class="text-xs text-slate-400 font-semibold mb-1">Live Web Application:</div>
+          <a href="https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/" target="_blank" class="text-sm font-bold text-sky-400 hover:underline">
+            Launch Streamlit App ↗
+          </a>
+        </div>
+        <div class="card-panel p-4 text-left">
+          <div class="text-xs text-slate-400 font-semibold mb-1">GitHub Repository:</div>
+          <a href="https://github.com/Snehan0911/ISL_Recognition" target="_blank" class="text-sm font-bold text-emerald-400 hover:underline">
+            Snehan0911/ISL_Recognition ↗
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation Controls -->
+  <footer class="h-16 px-8 flex items-center justify-between border-t border-slate-800 bg-[#0d1322]">
+    <div class="flex items-center gap-2 text-xs text-slate-500">
+      <span>Use</span>
+      <kbd class="px-2 py-1 bg-slate-800 rounded border border-slate-700 text-slate-300 font-mono">←</kbd>
+      <kbd class="px-2 py-1 bg-slate-800 rounded border border-slate-700 text-slate-300 font-mono">→</kbd>
+      <span>arrow keys or buttons to navigate slides</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="prevSlide()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i> Previous
+      </button>
+      <button onclick="nextSlide()" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-sky-600/30">
+        Next <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const counter = document.getElementById('slideCounter');
+
+    function showSlide(index) {
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === index);
+      });
+      counter.innerText = `Slide ${index + 1} / ${totalSlides}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        showSlide(currentSlide);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        showSlide(currentSlide);
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+  </script>
+</body>
+</html>
+

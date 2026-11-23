@@ -1,5 +1,7 @@
 # Indian Sign Language (ISL) Recognition using Deep CNN
 
+[![Interactive Portfolio](https://img.shields.io/badge/Portfolio-Interactive%20Showcase-38BDF8?logo=safari&logoColor=white)](index.html)
+[![Case Study](https://img.shields.io/badge/Technical%20Report-Case%20Study-818CF8?logo=markdown&logoColor=white)](PORTFOLIO_CASE_STUDY.md)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit%20Cloud-FF4B4B?logo=streamlit&logoColor=white)](https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
@@ -9,6 +11,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 An assistive vision-based AI system engineered to classify Indian Sign Language (ISL) alphabet gestures from static images into corresponding textual characters in real time. Built with a custom 4-block Convolutional Neural Network (CNN) featuring Batch Normalization, Global Average Pooling, Dropout regularization, dynamic learning rate scheduling, and browser-based speech synthesis.
+
+---
+
+## 🌟 Interactive Project Portfolio & Case Study
+
+Explore the dedicated project portfolio showcase and documentation:
+- 🚀 **[Interactive Web Portfolio (`index.html`)](index.html)**: Features an in-browser interactive ISL gesture simulator, speech synthesis studio, video demo player, neural architecture breakdown, and 24-sign alphabet dictionary.
+- 📑 **[Executive Technical Case Study (`PORTFOLIO_CASE_STUDY.md`)](PORTFOLIO_CASE_STUDY.md)**: In-depth STAR-format engineering breakdown, ablation benchmarks, and deployment architectural blueprints.
+- 📽️ **[Interactive Project Presentation (`IndiSign_AI_Project_Presentation.html`)](IndiSign_AI_Project_Presentation.html)**: 10-slide responsive pitch deck for technical recruiters, conferences, and presentations.
 
 ---
 
