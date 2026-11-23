@@ -1,9 +1,9 @@
 # Indian Sign Language (ISL) Recognition using Deep CNN
 
-[![Interactive Portfolio](https://img.shields.io/badge/Portfolio-Interactive%20Showcase-38BDF8?logo=safari&logoColor=white)](index.html)
-[![Case Study](https://img.shields.io/badge/Technical%20Report-Case%20Study-818CF8?logo=markdown&logoColor=white)](PORTFOLIO_CASE_STUDY.md)
+[![24/7 Live Portfolio](https://img.shields.io/badge/24%2F7%20Live%20Portfolio-GitHub%20Pages-38BDF8?logo=githubpages&logoColor=white)](https://snehan0911.github.io/ISL_Recognition/)
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit%20Cloud-FF4B4B?logo=streamlit&logoColor=white)](https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/)
+[![Case Study](https://img.shields.io/badge/Technical%20Report-Case%20Study-818CF8?logo=markdown&logoColor=white)](PORTFOLIO_CASE_STUDY.md)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![TensorFlow 2.x](https://img.shields.io/badge/TensorFlow-2.21-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
@@ -14,12 +14,18 @@ An assistive vision-based AI system engineered to classify Indian Sign Language 
 
 ---
 
-## 🌟 Interactive Project Portfolio & Case Study
+## 🌐 24/7 Live Public Portfolio & Web Application
 
-Explore the dedicated project portfolio showcase and documentation:
-- 🚀 **[Interactive Web Portfolio (`index.html`)](index.html)**: Features an in-browser interactive ISL gesture simulator, speech synthesis studio, video demo player, neural architecture breakdown, and 24-sign alphabet dictionary.
-- 📑 **[Executive Technical Case Study (`PORTFOLIO_CASE_STUDY.md`)](PORTFOLIO_CASE_STUDY.md)**: In-depth STAR-format engineering breakdown, ablation benchmarks, and deployment architectural blueprints.
-- 📽️ **[Interactive Project Presentation (`IndiSign_AI_Project_Presentation.html`)](IndiSign_AI_Project_Presentation.html)**: 10-slide responsive pitch deck for technical recruiters, conferences, and presentations.
+Experience the complete project online without any installation:
+
+- 🚀 **[Launch 24/7 Live Public Portfolio](https://snehan0911.github.io/ISL_Recognition/)**  
+  *Features an in-browser interactive ISL gesture simulator, speech synthesis studio, layer-by-layer CNN architecture, and application screenshots.*
+- ⚡ **[Launch Streamlit Live Web Application](https://islrecognition-ezwzp8lmwbrh2cjbaratev.streamlit.app/)**  
+  *Try real-time webcam gesture recognition, letter composition, and audio voice synthesis deployed on Streamlit Cloud.*
+- 📑 **[Executive Technical Case Study (PORTFOLIO_CASE_STUDY.md)](PORTFOLIO_CASE_STUDY.md)**  
+  *In-depth engineering report, ablation benchmarks, and deployment architectural blueprints.*
+- 📽️ **[Interactive Project Presentation Deck](IndiSign_AI_Project_Presentation.html)**  
+  *10-slide responsive HTML pitch deck for interviews, conferences, and technical walkthroughs.*
 
 ---
 
